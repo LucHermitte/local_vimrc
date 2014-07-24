@@ -57,10 +57,6 @@ that'll dynamically adapt to the current project settings, have a look at my
 [`lh#dev#option#get()`](http://code.google.com/p/lh-vim/source/browse/dev/trunk)
 functions.
 
-My [mu-template fork](http://code.google.com/p/lh-vim/wiki/muTemplate) 
-provides a template to help us filling our `vimrc_local` files.
-
-
 ## Options
 
 The behaviour of this plugin can be tuned with the following options:
@@ -86,6 +82,15 @@ policy, ...), the `vimrc_local` file need to be sourced before any template
 file is expanded. 
 This plugin provides the `:SourceLocalVimrc` command for this purpose.
 
+### Automatic increment of `vimrc_local` script version number
+When saved, if the `vimrc_local` script has a `s:k_version` variable, it will be
+incremented automatically. This variable is meant to avoid multiple inclusions 
+of the script for a given buffer. New `vimrc_local` scripts created with the
+help of the templates provided with my
+[mu-template](http://code.google.com/p/lh-vim/wiki/muTemplate) fork are making
+use of this variable.
+
+
 ## Elsewhere
 
 
@@ -94,13 +99,16 @@ a link to them ... later.
 
 ## TO DO
 
-- Document how `local_vimrc` can be used with BuildToolsWrapper to support
-  CMake based project.
+- Document how `local_vimrc` can be used with
+  [BuildToolsWrapper](http://code.google.com/p/lh-vim/wiki/BTW) to support
+  CMake based projects.
 - Document how to mix definitions that need to be source once only, and `local_vimrc`
 - Support the definition of the project configuration in files put a separate
   directory (in order to help versioning them).
 - Add option to stop looking at `$HOME` or elsewhere (`[bg]:lv_stop_at` : string,
   default `$HOME`) 
+- Support List of possible names for `vimrc_local` scripts
+- Modernize the v6 code to v7 (with lists and related functions)
 
 ## History
 

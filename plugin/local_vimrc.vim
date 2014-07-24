@@ -3,7 +3,7 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	1.11
+" Version:	2.0
 " Created:	09th Apr 2003
 " Last Update:	19th Jun 2014
 " License:      GPLv3
@@ -27,7 +27,7 @@
 " 	0- Set g:local_vimrc in your .vimrc if you wish to use filenames other
 " 	   than '_vimrc_local.vim'
 " 	a- Drop this plugin into a {rtp}/plugin/ directory, and install
-" 	   lh-vim-lib.
+" 	   lh-vim-lib v3.2
 " 	b- Define _vimrc_local.vim files into your directories
 "
 " 	   Ideally, each foo/bar/_vimrc_local.vim should be defined the same
@@ -53,6 +53,10 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.0    Code refactored.
+"               -> Search function deported to lh-vim-lib
+"               -> dependencies to vim7 and to lh-vim-lib introduced
+"               Support for directory of local_vimrc_files added
 "	v1.11   Less errors are printed when the file loaded contains errors
 "	v1.10   s:k_version in local_vimrc files is automatically incremented
 "	        on saving
@@ -76,13 +80,14 @@
 " TODO:		{{{2
 " 	(*) Add option to stop looking at $HOME or elsewhere
 " 	    ([bg]:lv_stop_at : string, default $HOME) 
+" 	(*) Retest corrections from v1.4, 1.6 and 1.8
 " See also: alternative scripts: #441, #3393, #1860, ...
 " }}}1
 "=============================================================================
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 111
+let s:k_version = 200
 if exists("g:loaded_local_vimrc") 
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
@@ -99,7 +104,11 @@ command! -nargs=0 SourceLocalVimrc call s:Main(expand('%:p'))
 " Functions {{{1
 " Name of the files used                                              {{{2
 function! s:LocalVimrcName()
-  return exists('g:local_vimrc') ? g:local_vimrc : '_vimrc_local.vim'
+  let res = exists('g:local_vimrc') ? g:local_vimrc : ['_vimrc_local.vim']
+  if type(res) == type('')
+    return [res]
+  endif
+  return res
 endfunction
 
 let s:local_vimrc = s:LocalVimrcName()
@@ -113,54 +122,35 @@ let s:re_last_path = '^/\=$\|^[A-Za-z]:[/\\]\+$\|^//$\|^\\\\$'.
       \ ((s:home != '') ? ('\|^'.s:home.'$') : '')
 
 " The main function                                                   {{{2
-function! s:SourceLocal(path) abort
-  let up_path = fnamemodify(a:path,':h')
-  if up_path == '.' " likelly a non existant path
-    if ! isdirectory(a:path)
-      call lh#common#warning_msg("[local_vimrc] The current file '".expand('%:p:')."' seems to be in a non-existant directory: '".a:path."'")
-    endif
-    let up_path = getcwd()
-  endif
-  " call confirm('crt='.a:path."\nup=".up_path."\n$HOME=".s:home, '&Ok', 1)
-  " echomsg ('crt='.a:path."\nup=".up_path."\n$HOME=".s:home)
-  if (a:path !~ s:re_last_path)
-    if (up_path !~ s:re_last_path)
-      " Recursive call: first check the parent directory
-      call s:SourceLocal(up_path)
-    elseif filereadable(up_path.'/'.s:local_vimrc)
-      " Terminal condition: try to source the upper(/uppest?) local-vimrc
-      if &verbose >= 2
-	echo 'Check '.up_path.' for '.s:local_vimrc.' ... found!'
-      endif
-      exe 'source '.escape(up_path.'/'.s:local_vimrc, ' \$,')
-    elseif &verbose >= 2
-      echo 'Check '.up_path.' for '.s:local_vimrc.' ... none!'
-    endif
-  endif
-
-  " In all case, try to source the local-vimrc present in the directory
-  " currently considered
-  if filereadable(a:path.'/'.s:local_vimrc)
-    if &verbose >= 2
-      echo 'Check '.a:path.' for '.s:local_vimrc.' ... found!'
-    endif
-    exe 'source '.escape(a:path.'/'.s:local_vimrc, ' \$,')
-  elseif &verbose >= 2
-    echo 'Check '.a:path.' for '.s:local_vimrc.' ... none!'
-  endif
-endfunction
-
 function! s:IsAForbiddenPath(path)
-  let forbidden = a:path !~ '^\(s\=ftp:\|s\=http:\|scp:\|^$\)'
+  let forbidden = a:path =~ '^\(s\=ftp:\|s\=http:\|scp:\|^$\)'
   return forbidden
 endfunction
 
 function! s:Main(path) abort
   " echomsg 'Sourcing: '.a:path
-  if !s:IsAForbiddenPath(a:path) 
+  if s:IsAForbiddenPath(a:path) 
     return
   else
-    call s:SourceLocal(a:path)
+    let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
+    let configs = []
+    for config in config_found
+      if filereadable(config)
+        let configs += [config] 
+      elseif is_directory(config)
+        let gpat = len(s:local_vimrc) > 1
+              \ ? ('{'.join(s:local_vimrc, ',').'}')
+              \ : (s:local_vimrc)
+        let configs += glob(gpat, 0, 1)
+      endif
+    endfor
+
+    for config in configs
+      exe 'source '.escape(config, ' \$,')
+      if &verbose >= 2
+        echomsg "Sourcing " . config
+      endif
+    endfor
   endif
 endfunction
 
@@ -168,17 +158,23 @@ endfunction
 function! s:IncrementVersionOnSave()
   let l = search('let s:k_version', 'n')
   if l > 0
-    let nl = substitute(getline(l), '\(let\s\+s:k_version\s*=\s*\)\(\d\+\)\s*$', '\=submatch(1).(1+submatch(2))', '')
+    let nl = substitute(getline(l),
+          \ '\(let\s\+s:k_version\s*=\s*\)\(\d\+\)\s*$',
+          \ '\=submatch(1).(1+submatch(2))',
+          \ '')
     call setline(l, nl)
   endif
 endfunction
 
 " Auto-command                                                        {{{2
-" => automate the loading of local-vimrc's every time we change buffers 
 aug LocalVimrc
   au!
+  " => automate the loading of local-vimrc's every time we change buffers 
   au BufEnter * :call s:Main(expand('<afile>:p:h'))
-  exe 'au BufWritePre '.s:local_vimrc . ' call s:IncrementVersionOnSave()'
+  " => Update script version every time it is saved.
+  for s:_pat in s:local_vimrc
+    exe 'au BufWritePre '.s:_pat. ' call s:IncrementVersionOnSave()'
+  endfor
 aug END
 
 " Functions }}}1
