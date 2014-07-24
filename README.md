@@ -22,11 +22,11 @@ sources the one found.
 
 ## Requirements / Installation
 
-Nothing special is required, except vim v6.0 or later.
+The latest version of this script requires vim 7.0 and
+[lh-vim-lib](http://code.google.com/p/lh-vim/wiki/lhVimLib).
 
-To install this plugin, either drop the plugin file into your
-`$HOME/.vim/plugin` directory (`$HOME/vimfiles/plugin` under Windows), or
-install it with your preferred plugin manager.
+The easiest way to install it is with vim-addon-manager/vim-pi that support
+vim-addon-files where the scripts dependencies are specified.
 
 ## Usage
 
@@ -103,12 +103,11 @@ a link to them ... later.
   [BuildToolsWrapper](http://code.google.com/p/lh-vim/wiki/BTW) to support
   CMake based projects.
 - Document how to mix definitions that need to be source once only, and `local_vimrc`
-- Support the definition of the project configuration in files put a separate
+- doc&test: Support the definition of the project configuration in files put a separate
   directory (in order to help versioning them).
 - Add option to stop looking at `$HOME` or elsewhere (`[bg]:lv_stop_at` : string,
   default `$HOME`) 
-- Support List of possible names for `vimrc_local` scripts
-- Modernize the v6 code to v7 (with lists and related functions)
+- doc: Support List of possible names for `vimrc_local` scripts
 
 ## History
 
