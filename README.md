@@ -25,8 +25,9 @@ sources the one found.
 The latest version of this script requires vim 7.0 and
 [lh-vim-lib](http://code.google.com/p/lh-vim/wiki/lhVimLib).
 
-The easiest way to install it is with vim-addon-manager/vim-pi that support
-vim-addon-files where the scripts dependencies are specified.
+The easiest way to install this plugin is with vim-addon-manager, or other
+plugin managers based on vim-pi, that support vim-addon-files -- as this script
+specifies its dependencies in vim-addon-file format.
 
 ## Usage
 
@@ -72,7 +73,7 @@ specific template files that override the default project file headers) before
 other plugins are triggered.  
 The typical use case will be from the shell:
 ```
-# There is _vimrc_local.vim file in /path/to/myproject/
+# There is a _vimrc_local.vim file in /path/to/myproject/
 cd /path/to/myproject/submodule42
 gvim foobar.h
 ```
@@ -80,7 +81,9 @@ gvim foobar.h
 In order to use `myproject` settings (naming styles, header guards naming
 policy, ...), the `vimrc_local` file need to be sourced before any template
 file is expanded. 
-This plugin provides the `:SourceLocalVimrc` command for this purpose.
+This plugin provides the `:SourceLocalVimrc` command for this purpose. It's up
+to Template Expander Plugin to exploit this feature -- as this moment, only my
+[fork](http://code.google.com/p/lh-vim/wiki/muTemplate) of mu-template does.
 
 ### Automatic increment of `vimrc_local` script version number
 When saved, if the `vimrc_local` script has a `s:k_version` variable, it will be
@@ -111,26 +114,29 @@ a link to them ... later.
 
 ## History
 
-- v1.12   Previous versions of the plugin were hosted on my google-code /
-  lh-misc repository. 
-
-- v1.11   Less errors are printed when the file loaded contains errors
-- v1.10   `s:k_version` in `vimrc_local` files is automatically incremented on
-          saving
-- v1.9    New command `:SourceLocalVimrc` in order to explicitly load the
-          local-vimrc file before creating new files from a template (We
-          can't just rely on `BufNewFile` as there is no guaranty
-          `vimrc_local`'s `BufNewFile` will be called before the one from the
-          Template Expander Plugin => it's up to the TEP to call the
-          function)
-- v1.8    No more infinite recursion on file in non existent paths.
-          + patch from cristiklein to support paths with spaces
-- v1.7    Don't search a local vimrc with remote paths (ftp://, http, ... )
-- v1.6    Sometimes root path is Z:\\, which is quite odd
-- v1.5    The auto-command is moved to the au-group `LocalVimrc`
+- v2.0  Code refactored.  
+          -> Search function deported to lh-vim-lib  
+          -> dependencies to vim7 and to lh-vim-lib introduced  
+        Support for directory of local_vimrc_files added.
+- v1.12 Previous versions of the plugin were hosted on my google-code /
+        lh-misc repository.
+- v1.11 Less errors are printed when the file loaded contains errors.
+- v1.10 `s:k_version` in `vimrc_local` files is automatically incremented on
+        saving.
+- v1.9  New command `:SourceLocalVimrc` in order to explicitly load the
+        local-vimrc file before creating new files from a template (We
+        can't just rely on `BufNewFile` as there is no guaranty
+        `vimrc_local`'s `BufNewFile` will be called before the one from the
+        Template Expander Plugin => it's up to the TEP to call the
+        function).  
+- v1.8  No more infinite recursion on file in non existent paths.
+        + patch from cristiklein to support paths with spaces
+- v1.7  Don't search a local vimrc with remote paths (ftp://, http, ... )
+- v1.6  Sometimes root path is Z:\\, which is quite odd
+- v1.5  The auto-command is moved to the au-group `LocalVimrc`
 - v1.4	Stop the recursion when we get to `//` or `\\` (UNC paths)
-- v1.3    More comments.
-          Trace of the directories searched when `'verbose' >= 2`
+- v1.3  More comments.  
+        Trace of the directories searched when `'verbose' >= 2`
 - v1.2	Stops at `$HOME` or at root (`/`)
 - v1.1	Uses `_vimrc_local.vim`
 - v1.0	Initial solution
