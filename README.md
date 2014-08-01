@@ -109,6 +109,19 @@ Modelines are particularly limited:
 With modelines, a setting needs to be repeated in every file, if there are too many things to set or tunings to change, it will quickly become difficult to maintain, moreover, it will require the use of a [template-expander plugin](http://vim.wikia.com/wiki/Category:Automated_Text_Insertion) (which you should consider if you have several vimmers in your project).
 * Not every one uses Vim to develop. I don't want to be bothered by other people editor settings, why should I parasite theirs with modelines ?
 
+### `.exrc`
+Vim nativelly supports `.exrc` files (`:h .exrc`, § d-) when `'exrc'` is on. This solution is very similar to `local_vimrc`. However `.exrc` files are executed (_sourced_ in Vim jargon) only on buffers (corresponding to files) which are in the exact same directory. Files in subdirectories won't trigger the execution of the project `.exrc` file.
+
+### Autocommands
+It's possible to add autocommands in our `.vimrc`. Autocommands that will detect files under a certain directory to trigger commands (`:set xxxxx`, `:let b:style='alman'`, `:source path/to/project_config.vim`, ...).
+
+If the autocommand executes simple commands (instead of sourcing a file), the solution won't scale when new commands will need to be added.
+
+Autocommands won't scale either as a project location may vary : 
+* On several machines a project may not be stored in the same path ;
+* When branches are stored in different paths, the `.vimrc` may need to be tuned for each branch ;
+* When several people are using Vim, it's easier to ask them to install a same plugin instead of asking them to maintain and adapt their respective `.vimrc`
+
 ### Project plugin
 There exist a quite old (which does mean bad) plugin dedicated to the management of project configuration. I've never used it, I won't be able to tell you why `local_vimrc` solution is better or not.
 
