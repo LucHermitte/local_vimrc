@@ -3,7 +3,7 @@ local_vimrc : A project management plugin for Vim
 
 The aim of `local_vimrc`is to apply settings on files from a same project. 
 
-A project is defined by a root directory: everything under the root diretory belongs to the project. 
+A project is defined by a root directory: everything under the root diretory belongs to the project. No need to register every single file in the project, they all belong. 
 
 
 ## Purpose
@@ -43,11 +43,11 @@ In other words. The _project_ file is expected to be loaded (/sourced)
 every time you enter a buffer that corresponds to a file under the project root
 directory.
 
-As a consequence, you'll may want to prevent multiple executions of parts the
+As a consequence, you may want to prevent multiple executions of parts the
 sourced file: almost everything shall remain identical and shall not need to
 be reset. However some plugins, like a.vim, rely on global variables to tune
 their behaviour. The settings (global variables) related to those plugins will
-require you update their setting every time -- if you expect to have settings
+require you to update their value every time -- if you expect to have settings
 that differ from a project to the other.  
 
 For your project settings prefer buffer-local mappings (`:h :map-<buffer>`),
@@ -65,8 +65,8 @@ functions.
 
 The behaviour of this plugin can be tuned with the following options:
 
-- `g:local_vimrc` variable specifies the filename to be searched. The default
-  is `_vimrc_local.vim`
+- `g:local_vimrc` variable specifies the filenames and filepaths to be searched. The default
+  is `"_vimrc_local.vim"`. It can contain a list (`:h List`) of pathnames, or a simple string.
 
 ## Other Features
 
@@ -82,10 +82,10 @@ gvim foobar.h
 ```
 
 In order to use `myproject` settings (naming styles, header guards naming
-policy, ...), the `vimrc_local` file need to be sourced before any template
-file is expanded. 
+policy, ...), the `vimrc_local` file needs to be sourced before any 
+template-file is expanded. 
 This plugin provides the `:SourceLocalVimrc` command for this purpose. It's up
-to Template Expander Plugin to exploit this feature -- as this moment, only my
+to the Template Expander Plugin to exploit this feature -- as this moment, only my
 [fork](http://code.google.com/p/lh-vim/wiki/muTemplate) of mu-template does.
 
 ### Automatic increment of `vimrc_local` script version number
