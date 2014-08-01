@@ -1,7 +1,10 @@
-local_vimrc
+local_vimrc : A project management plugin for Vim
 ===========
 
-Vim plugin that adds the support of per project/tree configuration plugins.
+The aim of `local_vimrc`is to apply settings on files from a same project. 
+
+A project is defined by a root directory: everything under the root diretory belongs to the project. 
+
 
 ## Purpose
 
@@ -94,8 +97,22 @@ help of the templates provided with my
 use of this variable.
 
 
-## Elsewhere
+## Alternatives
 
+To be fair, there exist [alternatives](http://stackoverflow.com/a/456889/15934).
+
+### Modelines
+Modelines are particularly limited:
+* We can't set variables (that tunes other (ft)plugins, like _"should the braces of the for-snippet be on a newline ?"_), 
+* nor call function from them (I don't limit myself to coding standards, I also set the makefile to use depending on the current directory)
+* Modelines aren't [DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+With modelines, a setting needs to be repeated in every file, if there are too many things to set or tunings to change, it will quickly become difficult to maintain, moreover, it will require the use of a [template-expander plugin](http://vim.wikia.com/wiki/Category:Automated_Text_Insertion) (which you should consider if you have several vimmers in your project).
+* Not every one uses Vim to develop. I don't want to be bothered by other people editor settings, why should I parasite theirs with modelines ?
+
+### Project plugin
+There exist a quite old (which does mean bad) plugin dedicated to the management of project configuration. I've never used it, I won't be able to tell you why `local_vimrc` solution is better or not.
+
+### Plugins similar to local_vimrc
 
 There exist many plugins with the same name or even the same purpose. I may add
 a link to them ... later. 
