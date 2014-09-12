@@ -3,9 +3,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	2.0
+" Version:	2.0.1
 " Created:	09th Apr 2003
-" Last Update:	19th Jun 2014
+" Last Update:	12th Sep 2014
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -53,6 +53,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.0.1  Updated to match changes in lh-vim-lib 3.2.2.
 "       v2.0    Code refactored.
 "               -> Search function deported to lh-vim-lib
 "               -> dependencies to vim7 and to lh-vim-lib introduced
@@ -86,11 +87,15 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 200
+let s:k_version = 201
 if exists("g:loaded_local_vimrc") 
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
   finish 
+endif
+if lh#path#version() < 3202
+  call lh#common#error_msg('local_vimrc requires a version of lh-vim-lib >= 3.2.2. Please upgrade it.')
+  finish
 endif
 let g:loaded_local_vimrc = s:k_version
 let s:cpo_save=&cpo
@@ -113,12 +118,10 @@ endfunction
 let s:local_vimrc = s:LocalVimrcName()
 
 " Value of $HOME -- actually a regex.                                 {{{2
-let s:home = substitute($HOME, '/\|\\', '[/\\\\]', 'g')
+let s:home = substitute($HOME, '[/\\]', '[/\\\\]', 'g')
 
 " Regex used to determine when we must stop looking for local-vimrc's {{{2
-" Sometimes paths appears as Z:\\ ....
-let s:re_last_path = '^/\=$\|^[A-Za-z]:\+$\|^//$\|^\\\\$'. 
-      \ ((s:home != '') ? ('\|^'.s:home.'$') : '')
+let s:re_last_path = !empty(s:home) ? ('^'.s:home.'$') : ''
 
 " The main function                                                   {{{2
 function! s:IsAForbiddenPath(path)
@@ -169,6 +172,7 @@ endfunction
 aug LocalVimrc
   au!
   " => automate the loading of local-vimrc's every time we change buffers 
+  " Note: BufEnter seems to be triggerred twice on a "vim foo.bar"
   au BufEnter * :call s:Main(expand('<afile>:p:h'))
   " => Update script version every time it is saved.
   for s:_pat in s:local_vimrc

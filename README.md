@@ -26,11 +26,27 @@ sources the one found.
 ## Requirements / Installation
 
 The latest version of this script requires vim 7.0 and
-[lh-vim-lib](http://code.google.com/p/lh-vim/wiki/lhVimLib).
+[lh-vim-lib](http://code.google.com/p/lh-vim/wiki/lhVimLib) v3.2.2+.
 
-The easiest way to install this plugin is with vim-addon-manager, or other
-plugin managers based on vim-pi, that support vim-addon-files -- as this script
-specifies its dependencies in vim-addon-file format.
+The easiest way to install this plugin is with
+[vim-addon-manager](https://github.com/MarcWeber/vim-addon-manager), or other
+plugin managers based on [vim-pi](https://bitbucket.org/vimcommunity/vim-pi),
+that support vim-addon-files -- as this script specifies its
+[dependencies](https://github.com/LucHermitte/local_vimrc/blob/master/local_vimrc-addon-info.txt)
+in vim-addon-file format.
+
+```vim
+ActivateAddons local_vimrc
+```
+
+If you really want to stick with dependencies unware plugins that cannot
+support subversion repositories like Vundle, you can install alerque's mirror
+of lh-vim-lib on github.
+
+```vim
+Bundle 'alerque/lh-vim-lib'                                          
+Bundle 'LucHermitte/local_vimrc'
+```
 
 ## Usage
 
@@ -144,29 +160,30 @@ a link to them ... later.
 
 ## History
 
-- v2.0  Code refactored.  
-          -> Search function deported to lh-vim-lib  
-          -> dependencies to vim7 and to lh-vim-lib introduced  
-        Support for directory of local_vimrc_files added.
-- v1.12 Previous versions of the plugin were hosted on my google-code /
-        lh-misc repository.
-- v1.11 Less errors are printed when the file loaded contains errors.
-- v1.10 `s:k_version` in `vimrc_local` files is automatically incremented on
-        saving.
-- v1.9  New command `:SourceLocalVimrc` in order to explicitly load the
-        local-vimrc file before creating new files from a template (We
-        can't just rely on `BufNewFile` as there is no guaranty
-        `vimrc_local`'s `BufNewFile` will be called before the one from the
-        Template Expander Plugin => it's up to the TEP to call the
-        function).  
-- v1.8  No more infinite recursion on file in non existent paths.
-        + patch from cristiklein to support paths with spaces
-- v1.7  Don't search a local vimrc with remote paths (ftp://, http, ... )
-- v1.6  Sometimes root path is Z:\\, which is quite odd
-- v1.5  The auto-command is moved to the au-group `LocalVimrc`
-- v1.4	Stop the recursion when we get to `//` or `\\` (UNC paths)
-- v1.3  More comments.  
-        Trace of the directories searched when `'verbose' >= 2`
-- v1.2	Stops at `$HOME` or at root (`/`)
-- v1.1	Uses `_vimrc_local.vim`
-- v1.0	Initial solution
+- v2.0.1 Updated to match changes in lh-vim-lib 3.2.2.  
+- v2.0   Code refactored.  
+           -> Search function deported to lh-vim-lib  
+           -> dependencies to vim7 and to lh-vim-lib introduced  
+         Support for directory of local_vimrc_files added.
+- v1.12  Previous versions of the plugin were hosted on my google-code /
+         lh-misc repository.
+- v1.11  Less errors are printed when the file loaded contains errors.
+- v1.10  `s:k_version` in `vimrc_local` files is automatically incremented on
+         saving.
+- v1.9   New command `:SourceLocalVimrc` in order to explicitly load the
+         local-vimrc file before creating new files from a template (We
+         can't just rely on `BufNewFile` as there is no guaranty
+         `vimrc_local`'s `BufNewFile` will be called before the one from the
+         Template Expander Plugin => it's up to the TEP to call the
+         function).  
+- v1.8   No more infinite recursion on file in non existent paths.
+         + patch from cristiklein to support paths with spaces
+- v1.7   Don't search a local vimrc with remote paths (ftp://, http, ... )
+- v1.6   Sometimes root path is Z:\\, which is quite odd
+- v1.5   The auto-command is moved to the au-group `LocalVimrc`
+- v1.4	 Stop the recursion when we get to `//` or `\\` (UNC paths)
+- v1.3   More comments.  
+         Trace of the directories searched when `'verbose' >= 2`
+- v1.2	 Stops at `$HOME` or at root (`/`)
+- v1.1	 Uses `_vimrc_local.vim`
+- v1.0	 Initial solution
