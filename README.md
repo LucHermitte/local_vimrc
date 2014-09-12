@@ -48,6 +48,20 @@ Bundle 'alerque/lh-vim-lib'
 Bundle 'LucHermitte/local_vimrc'
 ```
 
+Or, with a NeoBundle version that doesn't support vim-pi yet:
+```vim
+set rtp+=~/.vim/bundle/NeoBundle.vim/
+call neobundle#begin(expand('~/.vim/bundle'))
+NeoBundleFetch 'Shougo/NeoBundle.vim'
+" Line required to force the right plugin name -> lh-vim-lib, and not trunk
+NeoBundle 'http://lh-vim.googlecode.com/svn/vim-lib/trunk', {'name': 'lh-vim-lib'}
+" Note: I haven't found the syntax to merge the two NeoBundle lines into one...
+NeoBundle 'LucHermitte/local_vimrc', {'depends': 'lh-vim-lib'}
+call neobundle#end()
+
+NeoBundleCheck
+```
+
 ## Usage
 
 Drop a `_vimrc_local.vim` file into any project root directory, and write it
