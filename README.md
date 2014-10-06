@@ -40,7 +40,7 @@ ActivateAddons local_vimrc
 ```
 
 If you really want to stick with dependencies unware plugins that cannot
-support subversion repositories like Vundle, you can install alerque's mirror
+support subversion repositories like Vundle, you can install vim-scripts' mirror
 of lh-vim-lib on github.
 
 ```vim
