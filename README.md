@@ -44,7 +44,7 @@ support subversion repositories like Vundle, you can install alerque's mirror
 of lh-vim-lib on github.
 
 ```vim
-Bundle 'alerque/lh-vim-lib'                                          
+Bundle 'vim-scripts/lh-vim-lib'                                          
 Bundle 'LucHermitte/local_vimrc'
 ```
 
