@@ -157,8 +157,10 @@ There exist a quite old (which does mean bad) plugin dedicated to the management
 
 ### Plugins similar to local_vimrc
 
-There exist many plugins with the same name or even the same purpose. I may add
-a link to them ... later. 
+There exist many plugins with the same name or even the same purpose.
+
+For example:
+- [vim-localvimrc](https://github.com/embear/vim-localvimrc)
 
 ## TO DO
 
