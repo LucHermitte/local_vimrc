@@ -3,9 +3,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	2.0.1
+" Version:	2.1.0
 " Created:	09th Apr 2003
-" Last Update:	12th Sep 2014
+" Last Update:	03rd Mar 2015
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -17,7 +17,7 @@
 "	 to cwd, and source .exrc from every directory if present ?
 "	 (And if cwd is not under $HOME, just source ~/.exrc).
 "	 What do I put into .vimrc to do this ?
-" 
+"
 "	"Example: current dir is ~/a/b/c. Files are sourced in this order:
 "	 ~/.exrc, then ~/a/.exrc, ~/a/b/.exrc, ~/a/b/c/.exrc.
 "	 No messages if some of .exrc does not exist."
@@ -34,14 +34,14 @@
 " 	   way as a ftplugin, i.e.: {{{3
 "		" Global stuff that needs to be updated/override
 "		let g:bar = 'bar'  " YES! This is a global variable!
-"		
+"
 "		" Local stuff that needs to be defined once for each buffer
 "		if exists('b:foo_bar_local_vimrc') | finish | endif
 "		let b:foo_bar_local_vimrc = 1
 "		setlocal xxx
 "		nnoremap <buffer> foo :call <sid>s:Foo()<cr>
 "		let b:foo = 'foo'
-"		
+"
 "		" Global stuff that needs to be defined once only => functions
 "		if exists('g:foo_bar_local_vimrc') | finish | endif
 "		let g:foo_bar_local_vimrc = 1
@@ -53,6 +53,8 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.1.0  Whitelist, blacklist & co
+"               Requires lh-vim-lib 3.2.4
 "       v2.0.1  Updated to match changes in lh-vim-lib 3.2.2.
 "       v2.0    Code refactored.
 "               -> Search function deported to lh-vim-lib
@@ -79,22 +81,25 @@
 " 	v1.1	Uses _vimrc_local.vim
 " 	v1.0	Initial solution
 " TODO:		{{{2
-" 	(*) Add option to stop looking at $HOME or elsewhere
-" 	    ([bg]:lv_stop_at : string, default $HOME) 
+" 	(*) Test regex for white/black list
+" 	(*) Test sandbox -> E48
+" 	(*) Test lists with config directories
+" 	(*) move to autoload, then ...
+" 	(*) ... add #verbose/...
 " See also: alternative scripts: #441, #3393, #1860, ...
 " }}}1
 "=============================================================================
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 201
-if exists("g:loaded_local_vimrc") 
+let s:k_version = 210
+if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
-  finish 
+  finish
 endif
-if lh#path#version() < 3202
-  call lh#common#error_msg('local_vimrc requires a version of lh-vim-lib >= 3.2.2. Please upgrade it.')
+if lh#path#version() < 3204
+  call lh#common#error_msg('local_vimrc requires a version of lh-vim-lib >= 3.2.4. Please upgrade it.')
   finish
 endif
 let g:loaded_local_vimrc = s:k_version
@@ -105,7 +110,48 @@ set cpo&vim
 " Commands {{{1
 command! -nargs=0 SourceLocalVimrc call s:Main(expand('%:p'))
 
+" Default Options {{{1
+runtime plugin/let.vim " from lh-vim-lib
+LetIfUndef g:local_vimrc_options             {}
+LetIfUndef g:local_vimrc_options.whitelist   []
+LetIfUndef g:local_vimrc_options.blacklist   []
+LetIfUndef g:local_vimrc_options.asklist     []
+LetIfUndef g:local_vimrc_options.sandboxlist []
+
+" Accept user defined ~/.vim/_vimrc_local.vim, but no file from the various addons,
+" bundles, ...
+call lh#path#munge(g:local_vimrc_options.whitelist, lh#path#vimfiles())
+call lh#path#munge(g:local_vimrc_options.blacklist, lh#path#vimfiles().'/.*')
+
+" Accept $HOME, but nothing from parent directories
+call lh#path#munge(g:local_vimrc_options.asklist, $HOME)
+call lh#path#munge(g:local_vimrc_options.blacklist, fnamemodify($HOME, ':p:h:h'))
+" The directories where projects (we trust) are stored shall be added into
+" whitelist
+
 " Functions {{{1
+" Whitelist, black list & co                                          {{{2
+function! s:SortLists(lhs, rhs)
+  return (a:lhs)[0] <= (a:rhs)[0]
+endfunction
+function! s:GetList(listname, options)
+  let list = copy(get(a:options, a:listname, []))
+  call map(list, '[v:val, a:listname]')
+  return list
+endfunction
+
+function! s:PrepareLists()
+  let options     = lh#option#get('local_vimrc_options', {}, 'g')
+  let whitelist   = s:GetList('whitelist'  , options)
+  let blacklist   = s:GetList('blacklist'  , options)
+  let asklist     = s:GetList('asklist'    , options)
+  let sandboxlist = s:GetList('sandboxlist', options)
+
+  let mergedlists = whitelist + blacklist + asklist + sandboxlist
+  call sort(mergedlists, function('s:SortLists'))
+  return mergedlists
+endfunction
+
 " Name of the files used                                              {{{2
 function! s:LocalVimrcName()
   let res = exists('g:local_vimrc') ? g:local_vimrc : ['_vimrc_local.vim']
@@ -131,14 +177,14 @@ endfunction
 
 function! s:Main(path) abort
   " echomsg 'Sourcing: '.a:path
-  if s:IsAForbiddenPath(a:path) 
+  if s:IsAForbiddenPath(a:path)
     return
   else
     let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
     let configs = []
     for config in config_found
       if filereadable(config)
-        let configs += [config] 
+        let configs += [config]
       elseif is_directory(config)
         let gpat = len(s:local_vimrc) > 1
               \ ? ('{'.join(s:local_vimrc, ',').'}')
@@ -147,7 +193,29 @@ function! s:Main(path) abort
       endif
     endfor
 
+    let filtered_pathnames = s:PrepareLists()
+    let fp_keys = map(copy(filtered_pathnames), '(v:val)[0]')
     for config in configs
+      let idx = match(fp_keys, '^'.lh#path#to_regex(fnamemodify(config, ':h')).'$')
+      if idx != -1
+        let permission = filtered_pathnames[idx][1]
+        if permission == 'blacklist'
+          if &verbose >= 2
+            echomsg "(blacklist) Ignoring " . config
+          endif
+          continue
+        elseif permission == 'sandbox'
+          exe 'sandbox source '.escape(config, ' \$,')
+          if &verbose >= 2
+            echomsg "(sandbox) Sourcing " . config
+          endif
+          continue
+        elseif permission == 'ask'
+          if CONFIRM('Do you want to source "'.config.'"?', "&Yes\n&No", 1) != 1
+            continue
+          endif
+        endif
+      endif
       exe 'source '.escape(config, ' \$,')
       if &verbose >= 2
         echomsg "Sourcing " . config
@@ -171,7 +239,7 @@ endfunction
 " Auto-command                                                        {{{2
 aug LocalVimrc
   au!
-  " => automate the loading of local-vimrc's every time we change buffers 
+  " => automate the loading of local-vimrc's every time we change buffers
   " Note: BufEnter seems to be triggerred twice on a "vim foo.bar"
   au BufEnter * :call s:Main(expand('<afile>:p:h'))
   " => Update script version every time it is saved.

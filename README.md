@@ -1,9 +1,11 @@
 local_vimrc : A project management plugin for Vim
 ===========
 
-The aim of `local_vimrc`is to apply settings on files from a same project. 
+The aim of `local_vimrc` is to apply settings on files from a same project.
 
-A project is defined by a root directory: everything under the root diretory belongs to the project. No need to register every single file in the project, they all belong. 
+A project is defined by a root directory: everything under the root diretory
+belongs to the project. No need to register every single file in the project,
+they all belong.
 
 
 ## Purpose
@@ -17,7 +19,7 @@ sources the one found.
 > and source `.exrc` from every directory if present ?
 > (And if cwd is not under `$HOME,` just source `~/.exrc)`.
 > What do I put into .vimrc to do this ?
-> 
+>
 > Example: current dir is `~/a/b/c`. Files are sourced in this order:
 > ~/.exrc, then ~/a/.exrc, `~/a/b/.exrc`, `~/a/b/c/.exrc`.
 > No messages if some of `.exrc` does not exist.
@@ -26,7 +28,9 @@ sources the one found.
 ## Requirements / Installation
 
 The latest version of this script requires vim 7.0 and
-[lh-vim-lib](http://code.google.com/p/lh-vim/wiki/lhVimLib) v3.2.2+.
+[lh-vim-lib](http://code.google.com/p/lh-vim/wiki/lhVimLib) v3.2.4+.
+[UT](http://code.google.com/p/lh-vim/wiki/UT) v0.1.0 will be required to
+execute the unit tests.
 
 The easiest way to install this plugin is with
 [vim-addon-manager](https://github.com/MarcWeber/vim-addon-manager), or other
@@ -41,10 +45,11 @@ ActivateAddons local_vimrc
 
 If you really want to stick with dependencies unware plugins that cannot
 support subversion repositories like Vundle, you can install vim-scripts' mirror
-of lh-vim-lib on github.
+of lh-vim-lib on github -- it is kept up-to-date regarding `local_vimrc`
+requirements.
 
 ```vim
-Bundle 'vim-scripts/lh-vim-lib'                                          
+Bundle 'vim-scripts/lh-vim-lib'
 Bundle 'LucHermitte/local_vimrc'
 ```
 
@@ -65,7 +70,7 @@ NeoBundleCheck
 ## Usage
 
 Drop a `_vimrc_local.vim` file into any project root directory, and write it
-exactly as you would have written a ftplugin. 
+exactly as you would have written a ftplugin.
 
 ### `_vimrc_local.vim` content
 
@@ -78,7 +83,7 @@ sourced file: almost everything shall remain identical and shall not need to
 be reset. However some plugins, like a.vim, rely on global variables to tune
 their behaviour. The settings (global variables) related to those plugins will
 require you to update their value every time -- if you expect to have settings
-that differ from a project to the other.  
+that differ from a project to the other.
 
 For your project settings prefer buffer-local mappings (`:h :map-<buffer>`),
 abbreviations(`:h :abbreviate-<buffer>`), commands (`:h :command-buffer`),
@@ -98,6 +103,10 @@ The behaviour of this plugin can be tuned with the following options:
 - `g:local_vimrc` variable specifies the filenames and filepaths to be searched. The default
   is `"_vimrc_local.vim"`. It can contain a list (`:h List`) of pathnames, or a simple string.
 
+- `g:local_vimrc_options` dictionary will hold fours lists (`whitelist`,
+  `blacklist`, `asklist`, and `sandboxlist`) that define how security issues
+  are handled. See [#Security].
+
 ## Other Features
 
 ### Per-project settings and Template Expander Plugins
@@ -112,20 +121,85 @@ gvim foobar.h
 ```
 
 In order to use `myproject` settings (naming styles, header guards naming
-policy, ...), the `vimrc_local` file needs to be sourced before any 
-template-file is expanded. 
+policy, ...), the `vimrc_local` file needs to be sourced before any
+template-file is expanded.
+
 This plugin provides the `:SourceLocalVimrc` command for this purpose. It's up
 to the Template Expander Plugin to exploit this feature -- as this moment, only my
 [fork](http://code.google.com/p/lh-vim/wiki/muTemplate) of mu-template does.
 
 ### Automatic increment of `vimrc_local` script version number
 When saved, if the `vimrc_local` script has a `s:k_version` variable, it will be
-incremented automatically. This variable is meant to avoid multiple inclusions 
+incremented automatically. This variable is meant to avoid multiple inclusions
 of the script for a given buffer. New `vimrc_local` scripts created with the
 help of the templates provided with my
 [mu-template](http://code.google.com/p/lh-vim/wiki/muTemplate) fork are making
 use of this variable.
 
+### Security concerns
+
+Thanks to the option `g:local_vimrc_options`, it's possible to tune which
+`_vimrc_local` files are sourced, and how.
+
+#### The lists
+
+The four lists `g:local_vimrc_options.whitelist`,
+`g:local_vimrc_options.blacklist`, `g:local_vimrc_options.asklist`, and
+`g:local_vimrc_options.sandboxlist`, will hold lists of pathname patterns.
+Depending on the kind of the pattern that is the best match for the current
+`_vimrc_local` file, the file will be either:
+
+- sourced, if it belongs to the _whitelist_,
+- ignored, if it belongs to the _blacklist_,
+- sourced, if it belongs to the _asklist_ and if the end user says _"Yes
+  please, source this file!"_,
+- sourced in the sandbox (` :h sandbox`) if it belings to the _sandboxlist_.
+- or sourced if it belongs to no list (and if it's a local file, and not a file
+  accessed through scp://, http://, ...).
+
+#### Default settings
+
+- Any `_vimrc_local` file in `$HOME/.vim/` will be sourced.
+- However, files in `$HOME/.vim/` subdirectories will be ignored. This way, the
+  end-user may specify options he use when editing vim files. See
+  [the file I use](http://lh-vim.googlecode.com/svn/misc/trunk/_vimrc_local.vim)
+  for instance.
+- `_vimrc_local` files under `$HOME` are sourced only if the end-user
+  interactivelly says _"yes"_.
+- `_vimrc_local` files under `$HOME/..` are ignored.
+
+#### Tuning the lists
+
+In order to blindly accept `_vimrc_local` files from projects your are working
+on, you'll have to add this kind lines into your `.vimrc`, __after__ this
+plugin has been loaded:
+
+```vim
+" Sourcing the plugin
+ActivateAddons local_vimrc
+...
+" Let's assume you put all projects you are working on in your
+" corporation under $HOME/dev/my_corporation/
+call lh#path#munge(g:local_vimrc_options.whitelist, $HOME.'/dev/my_corporation')
+" But projects from 3rd parties/projects downloaded from the internet go
+" into $HOME/dev/3rdparties/
+call lh#path#munge(g:local_vimrc_options.blacklist, $HOME.'/dev/3rdparties')
+```
+
+If you want to override default settings, change them in your `.vimrc`
+__after__ this plugin has been loaded. e.g.:
+
+```vim
+ActivateAddons local_vimrc
+...
+" Remove $HOME from the asklist,
+call filter(g:local_vimrc_options, 'v:val != $HOME')
+" Add it in the sandbox list instead
+call lh#path#munge(g:local_vimrc_options.sandboxlist, $HOME)
+
+" Clean the whitelist
+let g:local_vimrc_options.whitelist = []
+```
 
 ## Alternatives
 
@@ -133,7 +207,7 @@ To be fair, there exist [alternatives](http://stackoverflow.com/a/456889/15934).
 
 ### Modelines
 Modelines are particularly limited:
-* We can't set variables (that tunes other (ft)plugins, like _"should the braces of the for-snippet be on a newline ?"_), 
+* We can't set variables (that tunes other (ft)plugins, like _"should the braces of the for-snippet be on a newline ?"_),
 * nor call function from them (I don't limit myself to coding standards, I also set the makefile to use depending on the current directory)
 * Modelines aren't [DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 With modelines, a setting needs to be repeated in every file, if there are too many things to set or tunings to change, it will quickly become difficult to maintain, moreover, it will require the use of a [template-expander plugin](http://vim.wikia.com/wiki/Category:Automated_Text_Insertion) (which you should consider if you have several vimmers in your project).
@@ -147,7 +221,7 @@ It's possible to add autocommands in our `.vimrc`. Autocommands that will detect
 
 If the autocommand executes simple commands (instead of sourcing a file), the solution won't scale when new commands will need to be added.
 
-Autocommands won't scale either as a project location may vary : 
+Autocommands won't scale either as a project location may vary :
 * On several machines a project may not be stored in the same path ;
 * When branches are stored in different paths, the `.vimrc` may need to be tuned for each branch ;
 * When several people are using Vim, it's easier to ask them to install a same plugin instead of asking them to maintain and adapt their respective `.vimrc`
@@ -157,8 +231,21 @@ There exist a quite old (which does mean bad) plugin dedicated to the management
 
 ### Plugins similar to local_vimrc
 
-There exist many plugins with the same name or even the same purpose. I may add
-a link to them ... later. 
+There exist many plugins with the same name or even with similar purpose. Just to
+name a few, there is for instance:
+
+- Project oriented plugins:
+
+    - Aric Blumer's good old [project.vim plugin #69](http://www.vim.org/scripts/script.php?script_id=69) which addresses other _project_ concerns.
+    - Tim Pope's [Projectionist #4989](https://github.com/tpope/vim-projectionist),
+
+- local-vimrc plugins:
+
+    - Marc Weber's
+      [vim-addon-local-vimrc](https://github.com/MarcWeber/vim-addon-local-vimrc)
+    - Markus _"embear"_ Braun's [local_vimrc #441](https://github.com/embear/vim-localvimrc),
+    - thinca's [localrc.vim #3393](http://www.vim.org/scripts/script.php?script_id=3393),
+    - Tye Zdrojewski's [Directory specific settings #1860](http://www.vim.org/scripts/script.php?script_id=1860),
 
 ## TO DO
 
@@ -168,12 +255,13 @@ a link to them ... later.
 - Document how to mix definitions that need to be source once only, and `local_vimrc`
 - doc&test: Support the definition of the project configuration in files put a separate
   directory (in order to help versioning them).
-- Add option to stop looking at `$HOME` or elsewhere (`[bg]:lv_stop_at` : string,
-  default `$HOME`) 
 - doc: Support List of possible names for `vimrc_local` scripts
+- Support checksum for project configuration from external sources
 
 ## History
 
+- v2.1.0 Whitelist, blacklist & co  
+         Requires lh-vim-lib 3.2.4
 - v2.0.1 Updated to match changes in lh-vim-lib 3.2.2.  
 - v2.0   Code refactored.  
            -> Search function deported to lh-vim-lib  
