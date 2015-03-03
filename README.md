@@ -103,9 +103,9 @@ The behaviour of this plugin can be tuned with the following options:
 - `g:local_vimrc` variable specifies the filenames and filepaths to be searched. The default
   is `"_vimrc_local.vim"`. It can contain a list (`:h List`) of pathnames, or a simple string.
 
-- `g:local_vimrc_options` dictionary will hold fours lists (`whitelist`,
+- `g:local_vimrc_options` dictionary will hold four lists (`whitelist`,
   `blacklist`, `asklist`, and `sandboxlist`) that define how security issues
-  are handled. See [#Security].
+  are handled. See [Security concerns](#security-concerns).
 
 ## Other Features
 
@@ -153,7 +153,7 @@ Depending on the kind of the pattern that is the best match for the current
 - ignored, if it belongs to the _blacklist_,
 - sourced, if it belongs to the _asklist_ and if the end user says _"Yes
   please, source this file!"_,
-- sourced in the sandbox (` :h sandbox`) if it belings to the _sandboxlist_.
+- sourced in the sandbox (` :h sandbox`) if it belongs to the _sandboxlist_.
 - or sourced if it belongs to no list (and if it's a local file, and not a file
   accessed through scp://, http://, ...).
 
