@@ -1,5 +1,4 @@
 "=============================================================================
-" $Id$
 " File:         tests/lh/UT-local_vimrc.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
 "		<URL:http://code.google.com/p/lh-vim/>
@@ -85,6 +84,7 @@ endfunction
 
 "------------------------------------------------------------------------
 function! s:TestAll()
+  return
   for i1 in range(0, len(s:k_permissions)-1)
     for i2 in range(0, len(s:k_permissions)-1)
       for i3 in range(0, len(s:k_permissions)-1)
@@ -95,6 +95,23 @@ function! s:TestAll()
     endfor
   endfor
 endfunction
+"------------------------------------------------------------------------
+function! s:TestBlackListStart()
+  let g:local_vimrc_options = deepcopy(s:k_save_config)
+  call lh#path#munge(g:local_vimrc_options.blacklist, s:k_data_path.'/lvl1/.*/')
+  Comment string(g:local_vimrc_options)
+  try
+    let g:levels = {}
+    silent exe 'sp '.s:k_deep_file
+    Assert has_key(g:levels, 'lvl1')
+    Assert !has_key(g:levels, 'lvl2')
+    Assert !has_key(g:levels, 'lvl3')
+    Assert !has_key(g:levels, 'lvl4')
+  finally
+    silent exe 'bd '.s:k_deep_file
+  endtry
+endfunction
+
 "------------------------------------------------------------------------
 let &cpo=s:cpo_save
 "=============================================================================

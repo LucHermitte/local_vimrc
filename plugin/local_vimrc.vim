@@ -194,21 +194,22 @@ function! s:Main(path) abort
     endfor
 
     let filtered_pathnames = s:PrepareLists()
-    let fp_keys = map(copy(filtered_pathnames), '(v:val)[0]')
+    let fp_keys = map(copy(filtered_pathnames), '"^".lh#path#to_regex((v:val)[0])')
     for config in configs
-      let idx = match(fp_keys, '^'.lh#path#to_regex(fnamemodify(config, ':h')).'$')
+      " let idx = match(fp_keys, '^'.(fnamemodify(config, ':h')).'$')
+      let idx = lh#list#find_if(fp_keys, string(fnamemodify(config, ':h')).'=~ v:1_')
       if idx != -1
         let permission = filtered_pathnames[idx][1]
         if permission == 'blacklist'
-          if &verbose >= 2
+          " if &verbose >= 2
             echomsg "(blacklist) Ignoring " . config
-          endif
+          " endif
           continue
         elseif permission == 'sandbox'
           exe 'sandbox source '.escape(config, ' \$,')
-          if &verbose >= 2
+          " if &verbose >= 2
             echomsg "(sandbox) Sourcing " . config
-          endif
+          " endif
           continue
         elseif permission == 'ask'
           if CONFIRM('Do you want to source "'.config.'"?', "&Yes\n&No", 1) != 1
