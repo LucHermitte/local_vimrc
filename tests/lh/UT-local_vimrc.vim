@@ -2,8 +2,8 @@
 " File:         tests/lh/UT-local_vimrc.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:      2.1.0
-let s:k_version = 2100
+" Version:      2.2.0
+let s:k_version = 220
 " Created:      03rd Mar 2015
 " Last Update:  $Date$
 "------------------------------------------------------------------------
@@ -16,10 +16,12 @@ let s:k_version = 2100
 UTSuite Testing local_vimrc.vim
 
 let g:local_vimrc_options = {}
-Reload plugin/local_vimrc.vim
+Reload plugin/local_vimrc.vim autoload/lh/local_vimrc.vim
 
 let s:cpo_save=&cpo
 set cpo&vim
+
+let s:k_silent = lh#local_vimrc#verbose() ? '' : 'silent '
 
 "------------------------------------------------------------------------
 " Constants
@@ -64,10 +66,10 @@ function! s:_Test_oneCase(lvls)
 
   try
     let g:levels = {}
-    silent exe 'sp '.s:k_deep_file
+    exe s:k_silent.'sp '.s:k_deep_file
     let i = 1
+    " Comment string(g:local_vimrc_options)
     for lvl in a:lvls
-      " Comment string(g:local_vimrc_options)
       if lvl == 'blacklist'
         AssertTxt (! has_key(g:levels, 'lvl'.i)
               \, "'lvl".i."' shouldn't have been in ".string(keys(g:levels)))
@@ -78,7 +80,7 @@ function! s:_Test_oneCase(lvls)
       let i += 1
     endfor
   finally
-    silent exe 'bd '.s:k_deep_file
+    silent! exe 'bd '.s:k_deep_file
   endtry
 endfunction
 
@@ -94,6 +96,10 @@ function! s:TestAll()
     endfor
   endfor
 endfunction
+
+function! s:_TestOne()
+  call s:_Test_oneCase(['whitelist', 'whitelist', 'blacklist', 'whitelist', ])
+endfunction
 "------------------------------------------------------------------------
 function! s:TestBlackListStart()
   let g:local_vimrc_options = deepcopy(s:k_save_config)
@@ -102,13 +108,13 @@ function! s:TestBlackListStart()
   " Comment string(g:local_vimrc_options)
   try
     let g:levels = {}
-    exe 'sp '.s:k_deep_file
+    exe s:k_silent.'sp '.s:k_deep_file
     Assert has_key(g:levels, 'lvl1')
     Assert !has_key(g:levels, 'lvl2')
     Assert !has_key(g:levels, 'lvl3')
     Assert !has_key(g:levels, 'lvl4')
   finally
-    silent exe 'bd '.s:k_deep_file
+    silent! exe 'bd '.s:k_deep_file
   endtry
 endfunction
 

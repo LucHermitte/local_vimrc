@@ -3,7 +3,7 @@ local_vimrc : A project management plugin for Vim
 
 The aim of `local_vimrc` is to apply settings on files from a same project.
 
-A project is defined by a root directory: everything under the root diretory
+A project is defined by a root directory: everything under the root directory
 belongs to the project. No need to register every single file in the project,
 they all belong.
 
@@ -43,7 +43,7 @@ in vim-addon-file format.
 ActivateAddons local_vimrc
 ```
 
-If you really want to stick with dependencies unware plugins that cannot
+If you really want to stick with dependencies unaware plugins that cannot
 support subversion repositories like Vundle, you can install vim-scripts' mirror
 of lh-vim-lib on github -- it is kept up-to-date regarding `local_vimrc`
 requirements.
@@ -80,10 +80,14 @@ directory.
 
 As a consequence, you may want to prevent multiple executions of parts the
 sourced file: almost everything shall remain identical and shall not need to
-be reset. However some plugins, like a.vim, rely on global variables to tune
-their behaviour. The settings (global variables) related to those plugins will
-require you to update their value every time -- if you expect to have settings
-that differ from a project to the other.
+be reset.
+However some plugins, like
+[_alternate_ (a.vim)](http://www.vim.org/scripts/script.php?script_id=31), rely
+on global variables to tune their behaviour. The settings (global variables)
+related to those plugins will require you to update their value every time --
+if you expect to have settings that differ from a project to the other. In
+order to support such project-aware setting, `local_vimrc` lets you in charge
+of handling anti-reinclusion guards in project configuration files.
 
 For your project settings prefer buffer-local mappings (`:h :map-<buffer>`),
 abbreviations(`:h :abbreviate-<buffer>`), commands (`:h :command-buffer`),
@@ -165,7 +169,7 @@ Depending on the kind of the pattern that is the best match for the current
   [the file I use](http://lh-vim.googlecode.com/svn/misc/trunk/_vimrc_local.vim)
   for instance.
 - `_vimrc_local` files under `$HOME` are sourced only if the end-user
-  interactivelly says _"yes"_.
+  interactively says _"yes"_.
 - `_vimrc_local` files under `$HOME/..` are ignored.
 
 #### Tuning the lists
@@ -214,7 +218,7 @@ With modelines, a setting needs to be repeated in every file, if there are too m
 * Not every one uses Vim to develop. I don't want to be bothered by other people editor settings, why should I parasite theirs with modelines ?
 
 ### `.exrc`
-Vim nativelly supports `.exrc` files (`:h .exrc`, § d-) when `'exrc'` is on. This solution is very similar to `local_vimrc`. However `.exrc` files are executed (_sourced_ in Vim jargon) only on buffers (corresponding to files) which are in the exact same directory. Files in subdirectories won't trigger the execution of the project `.exrc` file.
+Vim natively supports `.exrc` files (`:h .exrc`, § d-) when `'exrc'` is on. This solution is very similar to `local_vimrc`. However `.exrc` files are executed (_sourced_ in Vim jargon) only on buffers (corresponding to files) which are in the exact same directory. Files in subdirectories won't trigger the execution of the project `.exrc` file.
 
 ### Autocommands
 It's possible to add autocommands in our `.vimrc`. Autocommands that will detect files under a certain directory to trigger commands (`:set xxxxx`, `:let b:style='alman'`, `:source path/to/project_config.vim`, ...).
@@ -252,7 +256,7 @@ name a few, there is for instance:
 - Document how `local_vimrc` can be used with
   [BuildToolsWrapper](http://code.google.com/p/lh-vim/wiki/BTW) to support
   CMake based projects.
-- Document how to mix definitions that need to be source once only, and `local_vimrc`
+- Document how to mix definitions that need to be sourced only once, and `local_vimrc`
 - doc&test: Support the definition of the project configuration in files put a separate
   directory (in order to help versioning them).
 - doc: Support List of possible names for `vimrc_local` scripts
@@ -260,6 +264,8 @@ name a few, there is for instance:
 
 ## History
 
+- v2.2.0 Plugins functions moved to autoload.  
+         Verbose mode is activated by calling `lh#local_vimrc#verbose(1)`
 - v2.1.1 Bug fix in support of regex in white/black/... lists.
 - v2.1.0 Whitelist, blacklist & co  
          Requires lh-vim-lib 3.2.4

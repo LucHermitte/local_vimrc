@@ -3,7 +3,7 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	2.1.1
+" Version:	2.2.0
 " Created:	09th Apr 2003
 " Last Update:	03rd Mar 2015
 " License:      GPLv3
@@ -53,6 +53,8 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.0  Plugins functions moved to autoload.
+"               Verbose mode is activated by calling `lh#local_vimrc#verbose(1)`
 "       v2.1.0  Whitelist, blacklist & co
 "               Requires lh-vim-lib 3.2.4
 "       v2.0.1  Updated to match changes in lh-vim-lib 3.2.2.
@@ -83,15 +85,14 @@
 " TODO:		{{{2
 " 	(*) Test sandbox -> E48
 " 	(*) Test lists with config directories
-" 	(*) move to autoload, then ...
-" 	(*) ... add #verbose/...
+"       (*) Support checksum for project configuration from external sources
 " See also: alternative scripts: #441, #3393, #1860, ...
 " }}}1
 "=============================================================================
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 211
+let s:k_version = 220
 if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
@@ -129,29 +130,13 @@ call lh#path#munge(g:local_vimrc_options.blacklist, fnamemodify($HOME, ':p:h:h')
 " whitelist
 
 " Functions {{{1
-" Whitelist, black list & co                                          {{{2
-function! s:SortLists(lhs, rhs)
-  return (a:lhs)[0] <= (a:rhs)[0]
-endfunction
-function! s:GetList(listname, options)
-  let list = copy(get(a:options, a:listname, []))
-  call map(list, '[v:val, a:listname]')
-  return list
-endfunction
-
-function! s:PrepareLists()
-  let options     = lh#option#get('local_vimrc_options', {}, 'g')
-  let whitelist   = s:GetList('whitelist'  , options)
-  let blacklist   = s:GetList('blacklist'  , options)
-  let asklist     = s:GetList('asklist'    , options)
-  let sandboxlist = s:GetList('sandboxlist', options)
-
-  let mergedlists = whitelist + blacklist + asklist + sandboxlist
-  call sort(mergedlists, function('s:SortLists'))
-  return mergedlists
-endfunction
+" NB: Not all functions are moved into the autoload plugin.
+" Indeed, as the plugin main function is executed of each BufEnter, the
+" autoload plugin would have been loaded each time. This, way, we try to delay
+" its sourcing to the last moment.
 
 " Name of the files used                                              {{{2
+" NB: g:local_vimrc shall be set before loading this plugin!
 function! s:LocalVimrcName()
   let res = exists('g:local_vimrc') ? g:local_vimrc : ['_vimrc_local.vim']
   if type(res) == type('')
@@ -176,64 +161,32 @@ endfunction
 
 function! s:Main(path) abort
   " echomsg 'Sourcing: '.a:path
-  if s:IsAForbiddenPath(a:path)
-    return
-  else
-    let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
-    let configs = []
-    for config in config_found
-      if filereadable(config)
-        let configs += [config]
-      elseif is_directory(config)
-        let gpat = len(s:local_vimrc) > 1
-              \ ? ('{'.join(s:local_vimrc, ',').'}')
-              \ : (s:local_vimrc)
-        let configs += glob(gpat, 0, 1)
-      endif
-    endfor
+  if s:IsAForbiddenPath(a:path) | return | endif
 
-    let filtered_pathnames = s:PrepareLists()
+  let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
+  let configs = []
+  for config in config_found
+    if filereadable(config)
+      let configs += [config]
+    elseif isdirectory(config)
+      let gpat = len(s:local_vimrc) > 1
+            \ ? ('{'.join(s:local_vimrc, ',').'}')
+            \ : (s:local_vimrc)
+      let configs += glob(gpat, 0, 1)
+    endif
+  endfor
+
+  if !empty(configs)
+    let filtered_pathnames = lh#local_vimrc#_prepare_lists()
     let fp_keys = map(copy(filtered_pathnames), '"^".lh#path#to_regex((v:val)[0])')
     for config in configs
-      " let idx = match(fp_keys, '^'.(fnamemodify(config, ':h')).'$')
       let idx = lh#list#find_if(fp_keys, string(fnamemodify(config, ':h')).'=~ v:1_')
-      if idx != -1
-        let permission = filtered_pathnames[idx][1]
-        " echomsg fnamemodify(config, ':h')." =~ fp_keys[".idx."]=".fp_keys[idx]."   -- ".permission
-        if permission == 'blacklist'
-          if &verbose >= 2
-            echomsg "(blacklist) Ignoring " . config
-          endif
-          continue
-        elseif permission == 'sandbox'
-          exe 'sandbox source '.escape(config, ' \$,')
-          if &verbose >= 2
-            echomsg "(sandbox) Sourcing " . config
-          endif
-          continue
-        elseif permission == 'ask'
-          if CONFIRM('Do you want to source "'.config.'"?', "&Yes\n&No", 1) != 1
-            continue
-          endif
-        endif
-      endif
-      exe 'source '.escape(config, ' \$,')
-      if &verbose >= 2
-        echomsg "Sourcing " . config
-      endif
+      let permission = (idx != -1)
+            \ ? filtered_pathnames[idx][1]
+            \ : "default"
+      call lh#local_vimrc#_verbose( fnamemodify(config, ':h')." =~ fp_keys[".idx."]=".fp_keys[idx]."   -- ".permission)
+      call lh#local_vimrc#_handle_file(config, permission)
     endfor
-  endif
-endfunction
-
-" Update s:k_version in local_vimrc files                             {{{2
-function! s:IncrementVersionOnSave()
-  let l = search('let s:k_version', 'n')
-  if l > 0
-    let nl = substitute(getline(l),
-          \ '\(let\s\+s:k_version\s*=\s*\)\(\d\+\)\s*$',
-          \ '\=submatch(1).(1+submatch(2))',
-          \ '')
-    call setline(l, nl)
   endif
 endfunction
 
@@ -245,7 +198,7 @@ aug LocalVimrc
   au BufEnter * :call s:Main(expand('<afile>:p:h'))
   " => Update script version every time it is saved.
   for s:_pat in s:local_vimrc
-    exe 'au BufWritePre '.s:_pat. ' call s:IncrementVersionOnSave()'
+    exe 'au BufWritePre '.s:_pat. ' call lh#local_vimrc#_increment_version_on_save()'
   endfor
 aug END
 
