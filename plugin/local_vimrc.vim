@@ -81,7 +81,6 @@
 " 	v1.1	Uses _vimrc_local.vim
 " 	v1.0	Initial solution
 " TODO:		{{{2
-" 	(*) Test regex for white/black list
 " 	(*) Test sandbox -> E48
 " 	(*) Test lists with config directories
 " 	(*) move to autoload, then ...
@@ -92,7 +91,7 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 210
+let s:k_version = 211
 if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
