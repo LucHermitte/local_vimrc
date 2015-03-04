@@ -3,7 +3,7 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	2.1.0
+" Version:	2.1.1
 " Created:	09th Apr 2003
 " Last Update:	03rd Mar 2015
 " License:      GPLv3
@@ -200,16 +200,17 @@ function! s:Main(path) abort
       let idx = lh#list#find_if(fp_keys, string(fnamemodify(config, ':h')).'=~ v:1_')
       if idx != -1
         let permission = filtered_pathnames[idx][1]
+        " echomsg fnamemodify(config, ':h')." =~ fp_keys[".idx."]=".fp_keys[idx]."   -- ".permission
         if permission == 'blacklist'
-          " if &verbose >= 2
+          if &verbose >= 2
             echomsg "(blacklist) Ignoring " . config
-          " endif
+          endif
           continue
         elseif permission == 'sandbox'
           exe 'sandbox source '.escape(config, ' \$,')
-          " if &verbose >= 2
+          if &verbose >= 2
             echomsg "(sandbox) Sourcing " . config
-          " endif
+          endif
           continue
         elseif permission == 'ask'
           if CONFIRM('Do you want to source "'.config.'"?', "&Yes\n&No", 1) != 1

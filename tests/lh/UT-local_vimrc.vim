@@ -84,7 +84,6 @@ endfunction
 
 "------------------------------------------------------------------------
 function! s:TestAll()
-  return
   for i1 in range(0, len(s:k_permissions)-1)
     for i2 in range(0, len(s:k_permissions)-1)
       for i3 in range(0, len(s:k_permissions)-1)
@@ -98,11 +97,12 @@ endfunction
 "------------------------------------------------------------------------
 function! s:TestBlackListStart()
   let g:local_vimrc_options = deepcopy(s:k_save_config)
-  call lh#path#munge(g:local_vimrc_options.blacklist, s:k_data_path.'/lvl1/.*/')
-  Comment string(g:local_vimrc_options)
+  call lh#path#munge(g:local_vimrc_options.whitelist, s:k_data_path.'/lvl1')
+  call lh#path#munge(g:local_vimrc_options.blacklist, s:k_data_path.'/lvl1/.*')
+  " Comment string(g:local_vimrc_options)
   try
     let g:levels = {}
-    silent exe 'sp '.s:k_deep_file
+    exe 'sp '.s:k_deep_file
     Assert has_key(g:levels, 'lvl1')
     Assert !has_key(g:levels, 'lvl2')
     Assert !has_key(g:levels, 'lvl3')
