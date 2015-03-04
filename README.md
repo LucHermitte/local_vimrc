@@ -260,6 +260,7 @@ name a few, there is for instance:
 
 ## History
 
+- v2.1.1 Bug fix in support of regex in white/black/... lists.
 - v2.1.0 Whitelist, blacklist & co  
          Requires lh-vim-lib 3.2.4
 - v2.0.1 Updated to match changes in lh-vim-lib 3.2.2.  
