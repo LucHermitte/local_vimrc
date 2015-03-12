@@ -2,8 +2,8 @@
 " File:         autoload/lh/local_vimrc.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:      2.2.0.
-let s:k_version = 220
+" Version:      2.2.1.
+let s:k_version = 221
 " Created:      04th Mar 2015
 " Last Update:  $Date$
 "------------------------------------------------------------------------
@@ -96,7 +96,9 @@ endfunction
 " # Prepare Permission lists                                            {{{2
 " Function: s:SortLists(lhs, rhs) {{{3
 function! s:SortLists(lhs, rhs)
-  return (a:lhs)[0] <= (a:rhs)[0]
+  return    (a:lhs)[0] <  (a:rhs)[0] ? -1
+        \ : (a:lhs)[0] == (a:rhs)[0] ? 0
+        \ :                            0
 endfunction
 
 " Function: s:GetList(listname, options) {{{3

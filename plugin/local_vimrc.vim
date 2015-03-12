@@ -3,7 +3,7 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
-" Version:	2.2.0
+" Version:	2.2.1
 " Created:	09th Apr 2003
 " Last Update:	03rd Mar 2015
 " License:      GPLv3
@@ -53,6 +53,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.1  Directory lists were incorrectly sorted
 "       v2.2.0  Plugins functions moved to autoload.
 "               Verbose mode is activated by calling `lh#local_vimrc#verbose(1)`
 "       v2.1.0  Whitelist, blacklist & co
@@ -92,7 +93,7 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 220
+let s:k_version = 221
 if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')

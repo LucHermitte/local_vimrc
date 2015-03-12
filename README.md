@@ -264,6 +264,7 @@ name a few, there is for instance:
 
 ## History
 
+- v2.2.1  Directory lists were incorrectly sorted
 - v2.2.0 Plugins functions moved to autoload.  
          Verbose mode is activated by calling `lh#local_vimrc#verbose(1)`
 - v2.1.1 Bug fix in support of regex in white/black/... lists.
