@@ -7,6 +7,7 @@ A project is defined by a root directory: everything under the root directory
 belongs to the project. No need to register every single file in the project,
 they all belong.
 
+[![Project Stats](https://www.openhub.net/p/21020/widgets/project_thin_badge.gif)](https://www.openhub.net/p/21020)
 
 ## Purpose
 
