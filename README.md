@@ -28,15 +28,15 @@ sources the one found.
 ## Requirements / Installation
 
 The latest version of this script requires vim 7.0 and
-[lh-vim-lib](http://code.google.com/p/lh-vim/wiki/lhVimLib) v3.2.4+.
-[UT](http://code.google.com/p/lh-vim/wiki/UT) v0.1.0 will be required to
+[lh-vim-lib](http://github.com/LucHermitte/lh-vim-lib) v3.2.4+.
+[UT](http://github.com/LucHermitte/vim-UT) v0.1.0 will be required to
 execute the unit tests.
 
 The easiest way to install this plugin is with
 [vim-addon-manager](https://github.com/MarcWeber/vim-addon-manager), or other
 plugin managers based on [vim-pi](https://bitbucket.org/vimcommunity/vim-pi),
 that support vim-addon-files -- as this script specifies its
-[dependencies](https://github.com/LucHermitte/local_vimrc/blob/master/local_vimrc-addon-info.txt)
+[dependencies](https://github.com/LucHermitte/local_vimrc/blob/master/addon-info.txt)
 in vim-addon-file format.
 
 ```vim
@@ -49,7 +49,7 @@ of lh-vim-lib on github -- it is kept up-to-date regarding `local_vimrc`
 requirements.
 
 ```vim
-Bundle 'vim-scripts/lh-vim-lib'
+Bundle 'LucHermitte/lh-vim-lib'
 Bundle 'LucHermitte/local_vimrc'
 ```
 
@@ -59,7 +59,7 @@ set rtp+=~/.vim/bundle/NeoBundle.vim/
 call neobundle#begin(expand('~/.vim/bundle'))
 NeoBundleFetch 'Shougo/NeoBundle.vim'
 " Line required to force the right plugin name -> lh-vim-lib, and not trunk
-NeoBundle 'http://lh-vim.googlecode.com/svn/vim-lib/trunk', {'name': 'lh-vim-lib'}
+NeoBundle 'LucHermitte/lh-vim-lib', {'name': 'lh-vim-lib'}
 " Note: I haven't found the syntax to merge the two NeoBundle lines into one...
 NeoBundle 'LucHermitte/local_vimrc', {'depends': 'lh-vim-lib'}
 call neobundle#end()
@@ -96,8 +96,8 @@ menus (see my fork of buffer-menu), settings (`:h :setlocal`), and variables
 
 N.B.: if you are a plugin writer that want to support configuration variables
 that'll dynamically adapt to the current project settings, have a look at my
-[`lh#option#get()`](http://code.google.com/p/lh-vim/wiki/lhVimLib) and
-[`lh#dev#option#get()`](http://code.google.com/p/lh-vim/source/browse/dev/trunk)
+[`lh#option#get()`](http://github.com/LucHermitte/lh-vim-lib) and
+[`lh#dev#option#get()`](http://github.com/LucHermitte/lh-dev)
 functions.
 
 ## Options
@@ -130,14 +130,14 @@ template-file is expanded.
 
 This plugin provides the `:SourceLocalVimrc` command for this purpose. It's up
 to the Template Expander Plugin to exploit this feature -- as this moment, only my
-[fork](http://code.google.com/p/lh-vim/wiki/muTemplate) of mu-template does.
+[fork](http://github.com/LucHermitte/mu-template) of mu-template does.
 
 ### Automatic increment of `vimrc_local` script version number
 When saved, if the `vimrc_local` script has a `s:k_version` variable, it will be
 incremented automatically. This variable is meant to avoid multiple inclusions
 of the script for a given buffer. New `vimrc_local` scripts created with the
 help of the templates provided with my
-[mu-template](http://code.google.com/p/lh-vim/wiki/muTemplate) fork are making
+[mu-template](http://github.com/LucHermitte/mu-template) fork are making
 use of this variable.
 
 ### Security concerns
@@ -166,7 +166,7 @@ Depending on the kind of the pattern that is the best match for the current
 - Any `_vimrc_local` file in `$HOME/.vim/` will be sourced.
 - However, files in `$HOME/.vim/` subdirectories will be ignored. This way, the
   end-user may specify options he use when editing vim files. See
-  [the file I use](http://lh-vim.googlecode.com/svn/misc/trunk/_vimrc_local.vim)
+  [the file I use](http://github.com/LucHermitte/lh-misc/blob/master/_vimrc_local.vim)
   for instance.
 - `_vimrc_local` files under `$HOME` are sourced only if the end-user
   interactively says _"yes"_.
@@ -254,7 +254,7 @@ name a few, there is for instance:
 ## TO DO
 
 - Document how `local_vimrc` can be used with
-  [BuildToolsWrapper](http://code.google.com/p/lh-vim/wiki/BTW) to support
+  [BuildToolsWrapper](http://github.com/LucHermitte/vim-build-tools-wrapper) to support
   CMake based projects.
 - Document how to mix definitions that need to be sourced only once, and `local_vimrc`
 - doc&test: Support the definition of the project configuration in files put a separate
