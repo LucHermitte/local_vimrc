@@ -179,7 +179,6 @@ function! s:Main(path) abort
   endfor
 
   if !empty(configs)
-    let g:configs=configs
     let filtered_pathnames = lh#local_vimrc#_prepare_lists()
     let fp_keys = map(copy(filtered_pathnames), '"^".lh#path#to_regex((v:val)[0])')
     for config in configs
