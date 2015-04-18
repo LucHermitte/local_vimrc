@@ -1,11 +1,11 @@
 "=============================================================================
 " File:         tests/lh/UT-local_vimrc.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:      2.2.0
-let s:k_version = 220
+"		<URL:http://github.com/LucHermitte/local_vimrc>
+" Version:      2.2.2
+let s:k_version = 222
 " Created:      03rd Mar 2015
-" Last Update:  $Date$
+" Last Update:  18th Apr 2015
 "------------------------------------------------------------------------
 " Description:
 "       Unit Test for LocalVimrc
@@ -68,6 +68,7 @@ function! s:_Test_oneCase(lvls)
     let g:levels = {}
     exe s:k_silent.'sp '.s:k_deep_file
     let i = 1
+    " Comment string(g:levels)
     " Comment string(g:local_vimrc_options)
     for lvl in a:lvls
       if lvl == 'blacklist'

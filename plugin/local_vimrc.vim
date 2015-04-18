@@ -1,11 +1,10 @@
 "=============================================================================
-" $Id: local_vimrc.vim 848 2014-06-20 16:49:45Z luc.hermitte@gmail.com $
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:	2.2.1
+"		<URL:http://github.com/LucHermitte/local_vimrc>
+" Version:	2.2.2
 " Created:	09th Apr 2003
-" Last Update:	03rd Mar 2015
+" Last Update:	18th Apr 2015
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -53,6 +52,8 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.2  Directory lists were incorrectly sorted (bis) + shellslash
+"       isssue
 "       v2.2.1  Directory lists were incorrectly sorted
 "       v2.2.0  Plugins functions moved to autoload.
 "               Verbose mode is activated by calling `lh#local_vimrc#verbose(1)`
@@ -178,6 +179,7 @@ function! s:Main(path) abort
   endfor
 
   if !empty(configs)
+    let g:configs=configs
     let filtered_pathnames = lh#local_vimrc#_prepare_lists()
     let fp_keys = map(copy(filtered_pathnames), '"^".lh#path#to_regex((v:val)[0])')
     for config in configs
