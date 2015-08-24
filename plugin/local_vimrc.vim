@@ -110,7 +110,7 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands {{{1
-command! -nargs=0 SourceLocalVimrc call s:Main(expand('%:p'))
+command! -nargs=0 SourceLocalVimrc call s:Main(expand('%:p:h'))
 
 " Default Options {{{1
 runtime plugin/let.vim " from lh-vim-lib
