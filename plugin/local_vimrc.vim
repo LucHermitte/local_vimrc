@@ -2,9 +2,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.2
+" Version:	2.2.3
 " Created:	09th Apr 2003
-" Last Update:	18th Apr 2015
+" Last Update:	08th Sep 2015
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,6 +52,9 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.3  Merge pull requests: 
+"               - Incorrect addon-info extension (txt -> json)
+"               - Fix :SourceLocalVimrc path
 "       v2.2.2  Directory lists were incorrectly sorted (bis) + shellslash
 "       isssue
 "       v2.2.1  Directory lists were incorrectly sorted
@@ -94,7 +97,7 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 221
+let s:k_version = 223
 if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
