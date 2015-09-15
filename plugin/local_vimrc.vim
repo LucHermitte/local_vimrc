@@ -1,5 +1,4 @@
 "=============================================================================
-" $Id: local_vimrc.vim 848 2014-06-20 16:49:45Z luc.hermitte@gmail.com $
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://code.google.com/p/lh-vim/>
