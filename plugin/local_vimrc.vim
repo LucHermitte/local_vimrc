@@ -1,10 +1,10 @@
 "=============================================================================
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:	2.2.1
+"		<URL:http://github.com/LucHermitte/local_vimrc>
+" Version:	2.2.3
 " Created:	09th Apr 2003
-" Last Update:	03rd Mar 2015
+" Last Update:	08th Sep 2015
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,6 +52,11 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.3  Merge pull requests: 
+"               - Incorrect addon-info extension (txt -> json)
+"               - Fix :SourceLocalVimrc path
+"       v2.2.2  Directory lists were incorrectly sorted (bis) + shellslash
+"       isssue
 "       v2.2.1  Directory lists were incorrectly sorted
 "       v2.2.0  Plugins functions moved to autoload.
 "               Verbose mode is activated by calling `lh#local_vimrc#verbose(1)`
@@ -92,7 +97,7 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 221
+let s:k_version = 223
 if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
@@ -108,7 +113,7 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands {{{1
-command! -nargs=0 SourceLocalVimrc call s:Main(expand('%:p'))
+command! -nargs=0 SourceLocalVimrc call s:Main(expand('%:p:h'))
 
 " Default Options {{{1
 runtime plugin/let.vim " from lh-vim-lib

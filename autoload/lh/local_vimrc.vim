@@ -1,11 +1,11 @@
 "=============================================================================
 " File:         autoload/lh/local_vimrc.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
-"		<URL:http://code.google.com/p/lh-vim/>
-" Version:      2.2.1.
-let s:k_version = 221
+"		<URL:http://github.com/LucHermitte/local_vimrc>
+" Version:      2.2.2.
+let s:k_version = 222
 " Created:      04th Mar 2015
-" Last Update:  $Date$
+" Last Update:  18th Apr 2015
 "------------------------------------------------------------------------
 " Description:
 "       Internal functions for local_vimrc
@@ -56,7 +56,7 @@ function! lh#local_vimrc#_prepare_lists()
   let sandboxlist = s:GetList('sandboxlist', options)
 
   let mergedlists = whitelist + blacklist + asklist + sandboxlist
-  call sort(mergedlists, function('s:SortLists'))
+  call reverse(sort(mergedlists, function('s:SortLists')))
   return mergedlists
 endfunction
 
@@ -98,13 +98,13 @@ endfunction
 function! s:SortLists(lhs, rhs)
   return    (a:lhs)[0] <  (a:rhs)[0] ? -1
         \ : (a:lhs)[0] == (a:rhs)[0] ? 0
-        \ :                            0
+        \ :                            1
 endfunction
 
 " Function: s:GetList(listname, options) {{{3
 function! s:GetList(listname, options)
   let list = copy(get(a:options, a:listname, []))
-  call map(list, '[v:val, a:listname]')
+  call map(list, '[substitute(v:val, "[/\\\\]", lh#path#shellslash(), "g"), a:listname]')
   return list
 endfunction
 

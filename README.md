@@ -50,8 +50,8 @@ of lh-vim-lib on github -- it is kept up-to-date regarding `local_vimrc`
 requirements.
 
 ```vim
-Bundle 'LucHermitte/lh-vim-lib'
-Bundle 'LucHermitte/local_vimrc'
+Plugin 'LucHermitte/lh-vim-lib'
+Plugin 'LucHermitte/local_vimrc'
 ```
 
 Or, with a NeoBundle version that doesn't support vim-pi yet:
