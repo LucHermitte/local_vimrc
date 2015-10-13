@@ -44,10 +44,7 @@ in vim-addon-file format.
 ActivateAddons local_vimrc
 ```
 
-If you really want to stick with dependencies unaware plugins that cannot
-support subversion repositories like Vundle, you can install vim-scripts' mirror
-of lh-vim-lib on github -- it is kept up-to-date regarding `local_vimrc`
-requirements.
+With Vundle
 
 ```vim
 Plugin 'LucHermitte/lh-vim-lib'
@@ -232,7 +229,7 @@ Autocommands won't scale either as a project location may vary :
 * When several people are using Vim, it's easier to ask them to install a same plugin instead of asking them to maintain and adapt their respective `.vimrc`
 
 ### Project plugin
-There exist a quite old (which does mean bad) plugin dedicated to the management of project configuration. I've never used it, I won't be able to tell you why `local_vimrc` solution is better or not.
+There exist a quite old (which does NOT mean bad) plugin dedicated to the management of project configuration. I've never used it, I won't be able to tell you why `local_vimrc` solution is better or not.
 
 ### Plugins similar to local_vimrc
 
@@ -265,6 +262,10 @@ name a few, there is for instance:
 
 ## History
 
+- v2.2.3  Merge pull requests:   
+         - Incorrect addon-info extension (txt -> json)  
+         - Fix :SourceLocalVimrc path
+- v2.2.2  Directory lists were incorrectly sorted (bis) + shellslash isssue
 - v2.2.1  Directory lists were incorrectly sorted
 - v2.2.0 Plugins functions moved to autoload.  
          Verbose mode is activated by calling `lh#local_vimrc#verbose(1)`
