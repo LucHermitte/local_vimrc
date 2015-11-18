@@ -5,7 +5,7 @@
     "maintainer" : "Luc Hermitte <http://code.google.com/p/lh-vim/wiki/contact>",
     "repository" : {"type": "git", "url": "git@github.com:LucHermitte/local_vimrc.git"},
     "dependencies" : {
-        "lh-vim-lib" : {"type" : "git", "url" : "git@github.com:LucHermitte/lh-vim-lib.git"},
+        "lh-vim-lib" : {"type" : "git", "url" : "git@github.com:LucHermitte/lh-vim-lib.git"}
     },
     "description" : "Per project/tree configuration plugins",
     "homepage"    : "https://github.com/LucHermitte/local_vimrc"
