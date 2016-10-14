@@ -2,9 +2,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.3
+" Version:	2.2.4
 " Created:	09th Apr 2003
-" Last Update:	08th Sep 2015
+" Last Update:	14th Oct 2016
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,7 +52,9 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
-"       v2.2.3  Merge pull requests: 
+"       v2.2.4  Use new logging framework
+"               Fix issue when g:local_vimrc is a string.
+"       v2.2.3  Merge pull requests:
 "               - Incorrect addon-info extension (txt -> json)
 "               - Fix :SourceLocalVimrc path
 "       v2.2.2  Directory lists were incorrectly sorted (bis) + shellslash
@@ -130,7 +132,7 @@ call lh#path#munge(g:local_vimrc_options.blacklist, lh#path#vimfiles().'/.*')
 
 " Accept $HOME, but nothing from parent directories
 call lh#path#munge(g:local_vimrc_options.asklist, $HOME)
-call lh#path#munge(g:local_vimrc_options.blacklist, fnamemodify($HOME, ':p:h:h'))
+call lh#path#munge(g:local_vimrc_options.blacklist, fnamemodify('/', ':p'))
 " The directories where projects (we trust) are stored shall be added into
 " whitelist
 
@@ -174,13 +176,14 @@ function! s:Main(path) abort
     if filereadable(config)
       let configs += [config]
     elseif isdirectory(config)
-      let gpat = len(s:local_vimrc) > 1
+      let gpat = type(s:local_vimrc) == type([])
             \ ? ('{'.join(s:local_vimrc, ',').'}')
             \ : (s:local_vimrc)
       let configs += glob(gpat, 0, 1)
     endif
   endfor
 
+  " TODO: merge w/ lh#path#new_filtered_list()
   if !empty(configs)
     let filtered_pathnames = lh#local_vimrc#_prepare_lists()
     let fp_keys = map(copy(filtered_pathnames), '"^".lh#path#to_regex((v:val)[0])')
