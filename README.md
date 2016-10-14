@@ -104,6 +104,8 @@ The behaviour of this plugin can be tuned with the following options:
 
 - `g:local_vimrc` variable specifies the filenames and filepaths to be searched. The default
   is `"_vimrc_local.vim"`. It can contain a list (`:h List`) of pathnames, or a simple string.
+  Its meants to contain something that'll be relative to your current project
+  root.
 
 - `g:local_vimrc_options` dictionary will hold four lists (`whitelist`,
   `blacklist`, `asklist`, and `sandboxlist`) that define how security issues
@@ -262,6 +264,8 @@ name a few, there is for instance:
 
 ## History
 
+- v2.2.4  Use new logging framework  
+          Fix issue when `g:local_vimrc` is a string.
 - v2.2.3  Merge pull requests:   
          - Incorrect addon-info extension (txt -> json)  
          - Fix :SourceLocalVimrc path
