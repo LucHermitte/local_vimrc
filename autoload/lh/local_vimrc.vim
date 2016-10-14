@@ -2,10 +2,11 @@
 " File:         autoload/lh/local_vimrc.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:      2.2.2.
-let s:k_version = 222
+" Version:      2.2.4.
+let s:k_version = 224
 " Created:      04th Mar 2015
-" Last Update:  18th Apr 2015
+" Last Update:  14th Oct 2016
+" License:      GPLv3
 "------------------------------------------------------------------------
 " Description:
 "       Internal functions for local_vimrc
@@ -22,24 +23,25 @@ function! lh#local_vimrc#version()
 endfunction
 
 " # Debug   {{{2
-if !exists('s:verbose')
-  let s:verbose = 0
-endif
+let s:verbose = get(s:, 'verbose', 0)
 function! lh#local_vimrc#verbose(...)
   if a:0 > 0 | let s:verbose = a:1 | endif
   return s:verbose
 endfunction
 
-function! lh#local_vimrc#_verbose(expr)
+function! s:Log(expr, ...)
+  call call('lh#log#this',[a:expr]+a:000)
+endfunction
+
+function! lh#local_vimrc#_verbose(expr, ...)
   if s:verbose
-    echomsg a:expr
+    call call('s:Log',[a:expr]+a:000)
   endif
 endfunction
 
 function! lh#local_vimrc#debug(expr)
   return eval(a:expr)
 endfunction
-
 
 "------------------------------------------------------------------------
 " ## Exported functions     {{{1
