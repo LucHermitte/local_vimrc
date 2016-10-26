@@ -2,7 +2,7 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.5
+" Version:	2.2.6
 " Created:	09th Apr 2003
 " Last Update:	26th Oct 2016
 " License:      GPLv3
@@ -52,6 +52,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.6  ENH: Use lhvl 4.0.0 permission lists
 "       v2.2.5  BUG: Fix #7 -- support of config in directory
 "       v2.2.4  Use new logging framework
 "               Fix issue when g:local_vimrc is a string.
@@ -125,6 +126,9 @@ LetIfUndef g:local_vimrc_options.whitelist   []
 LetIfUndef g:local_vimrc_options.blacklist   []
 LetIfUndef g:local_vimrc_options.asklist     []
 LetIfUndef g:local_vimrc_options.sandboxlist []
+LetIfUndef g:local_vimrc_options._action_name = 'recognize a local vimrc at'
+LetIfUndef g:local_vimrc_options._do_handle  { file -> execute('source '.escape(file, ' \$'))}
+let s:permission_lists = lh#path#new_permission_lists(g:local_vimrc_options)
 
 " Accept user defined ~/.vim/_vimrc_local.vim, but no file from the various addons,
 " bundles, ...
@@ -132,7 +136,11 @@ call lh#path#munge(g:local_vimrc_options.whitelist, lh#path#vimfiles())
 call lh#path#munge(g:local_vimrc_options.blacklist, lh#path#vimfiles().'/.*')
 
 " Accept $HOME, but nothing from parent directories
-call lh#path#munge(g:local_vimrc_options.asklist, $HOME)
+if         index(g:local_vimrc_options.whitelist,   $HOME) < 0
+      \ && index(g:local_vimrc_options.blacklist,   $HOME) < 0
+      \ && index(g:local_vimrc_options.sandboxlist, $HOME) < 0
+  call lh#path#munge(g:local_vimrc_options.asklist, $HOME)
+endif
 call lh#path#munge(g:local_vimrc_options.blacklist, fnamemodify('/', ':p'))
 " The directories where projects (we trust) are stored shall be added into
 " whitelist
@@ -168,36 +176,28 @@ function! s:IsAForbiddenPath(path)
 endfunction
 
 function! s:Main(path) abort
-  " echomsg 'Sourcing: '.a:path
+  call lh#local_vimrc#_verbose("* Sourcing %1", a:path)
   if s:IsAForbiddenPath(a:path) | return | endif
 
   let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
   let configs = []
   for config in config_found
     if filereadable(config)
+      call lh#local_vimrc#_verbose(" - File config found -> %1", config)
       let configs += [config]
     elseif isdirectory(config)
       let gpat = type(s:local_vimrc) == type([])
             \ ? ('{'.join(s:local_vimrc, ',').'}')
             \ : (s:local_vimrc)
-      " let configs += glob(gpat, 0, 1)
-      let configs += globpath(config, gpat, 0, 1)
+      " let new_conf = glob(gpat, 0, 1)
+      let new_conf = globpath(config, gpat, 0, 1)
+      let configs += new_conf
+      call lh#local_vimrc#_verbose(" - dir config found %1 -> %2", config, new_conf)
     endif
   endfor
 
-  " TODO: merge w/ lh#path#new_filtered_list()
-  if !empty(configs)
-    let filtered_pathnames = lh#local_vimrc#_prepare_lists()
-    let fp_keys = map(copy(filtered_pathnames), '"^".lh#path#to_regex((v:val)[0])')
-    for config in configs
-      let idx = lh#list#find_if(fp_keys, string(fnamemodify(config, ':h')).'=~ v:1_')
-      let permission = (idx != -1)
-            \ ? filtered_pathnames[idx][1]
-            \ : "default"
-      call lh#local_vimrc#_verbose( fnamemodify(config, ':h')." =~ fp_keys[".idx."]=".fp_keys[idx]."   -- ".permission)
-      call lh#local_vimrc#_handle_file(config, permission)
-    endfor
-  endif
+  let configs = uniq(configs)
+  call s:permission_lists.handle_paths(configs)
 endfunction
 
 " Auto-command                                                        {{{2

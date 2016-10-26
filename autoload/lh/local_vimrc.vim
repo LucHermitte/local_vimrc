@@ -2,10 +2,10 @@
 " File:         autoload/lh/local_vimrc.vim                       {{{1
 " Author:       Luc Hermitte <EMAIL:hermitte {at} gmail {dot} com>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:      2.2.4.
-let s:k_version = 224
+" Version:      2.2.6.
+let s:k_version = 226
 " Created:      04th Mar 2015
-" Last Update:  14th Oct 2016
+" Last Update:  26th Oct 2016
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:

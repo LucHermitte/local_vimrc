@@ -29,7 +29,7 @@ sources the one found.
 ## Requirements / Installation
 
 The latest version of this script requires vim 7.0 and
-[lh-vim-lib](http://github.com/LucHermitte/lh-vim-lib) v3.2.4+.
+[lh-vim-lib](http://github.com/LucHermitte/lh-vim-lib) v4.0.0+.
 [UT](http://github.com/LucHermitte/vim-UT) v0.1.0 will be required to
 execute the unit tests.
 
@@ -97,6 +97,9 @@ that'll dynamically adapt to the current project settings, have a look at my
 [`lh#option#get()`](http://github.com/LucHermitte/lh-vim-lib) and
 [`lh#dev#option#get()`](http://github.com/LucHermitte/lh-dev)
 functions.
+
+You'll find examples of use in my
+[dedicated repository](http://github.com/LucHermitte/config).
 
 ## Options
 
@@ -270,8 +273,9 @@ name a few, there is for instance:
 
 ## History
 
+- v2.2.6  ENH: Use lhvl 4.0.0 permission lists  
+          This implicitly fix asklist management
 - v2.2.5  BUG: Fix #7 -- support of config in directory
-
 - v2.2.4  Use new logging framework  
           Fix issue when `g:local_vimrc` is a string.
 - v2.2.3  Merge pull requests:   
