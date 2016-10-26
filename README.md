@@ -104,8 +104,14 @@ The behaviour of this plugin can be tuned with the following options:
 
 - `g:local_vimrc` variable specifies the filenames and filepaths to be searched. The default
   is `"_vimrc_local.vim"`. It can contain a list (`:h List`) of pathnames, or a simple string.
-  Its meants to contain something that'll be relative to your current project
-  root.
+  It's meants to contain something that'll be relative to your current project
+  root.  
+  This can contain a directory or list of directories. In that case, in order
+  to find any file named `_vimrc_local.vim` in directories named `.config/` at
+  the root of current project directory, set the variable to 
+  ```vim
+  let g:local_vimrc = ['.config', '_vimrc_local.vim']
+  ```
 
 - `g:local_vimrc_options` dictionary will hold four lists (`whitelist`,
   `blacklist`, `asklist`, and `sandboxlist`) that define how security issues
@@ -263,6 +269,8 @@ name a few, there is for instance:
 - Support checksum for project configuration from external sources
 
 ## History
+
+- v2.2.5  BUG: Fix #7 -- support of config in directory
 
 - v2.2.4  Use new logging framework  
           Fix issue when `g:local_vimrc` is a string.

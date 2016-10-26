@@ -2,9 +2,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.4
+" Version:	2.2.5
 " Created:	09th Apr 2003
-" Last Update:	14th Oct 2016
+" Last Update:	26th Oct 2016
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,6 +52,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.5  BUG: Fix #7 -- support of config in directory
 "       v2.2.4  Use new logging framework
 "               Fix issue when g:local_vimrc is a string.
 "       v2.2.3  Merge pull requests:
@@ -179,7 +180,8 @@ function! s:Main(path) abort
       let gpat = type(s:local_vimrc) == type([])
             \ ? ('{'.join(s:local_vimrc, ',').'}')
             \ : (s:local_vimrc)
-      let configs += glob(gpat, 0, 1)
+      " let configs += glob(gpat, 0, 1)
+      let configs += globpath(config, gpat, 0, 1)
     endif
   endfor
 
