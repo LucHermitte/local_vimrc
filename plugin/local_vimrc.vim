@@ -2,9 +2,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.6
+" Version:	2.2.7
 " Created:	09th Apr 2003
-" Last Update:	26th Oct 2016
+" Last Update:	28th Oct 2016
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,6 +52,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.7  ENH: Listen for BufRead and BufNewFile
 "       v2.2.6  ENH: Use lhvl 4.0.0 permission lists
 "       v2.2.5  BUG: Fix #7 -- support of config in directory
 "       v2.2.4  Use new logging framework
@@ -117,7 +118,7 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands {{{1
-command! -nargs=0 SourceLocalVimrc call s:Main(expand('%:p:h'))
+command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p:h'))
 
 " Default Options {{{1
 runtime plugin/let.vim " from lh-vim-lib
@@ -175,7 +176,7 @@ function! s:IsAForbiddenPath(path)
   return forbidden
 endfunction
 
-function! s:Main(path) abort
+function! s:SourceLocalVimrc(path) abort
   call lh#local_vimrc#_verbose("* Sourcing %1", a:path)
   if s:IsAForbiddenPath(a:path) | return | endif
 
@@ -203,9 +204,17 @@ endfunction
 " Auto-command                                                        {{{2
 aug LocalVimrc
   au!
-  " => automate the loading of local-vimrc's every time we change buffers
-  " Note: BufEnter seems to be triggerred twice on a "vim foo.bar"
-  au BufEnter * :call s:Main(expand('<afile>:p:h'))
+  " => automate the loading of local-vimrc's:
+  " - BufRead: before things using BufReadPost, and lhvl-project
+  "   Note: BufRead is used by filetype detection, which should be triggered
+  "   first.
+  " - BufNewFile:
+  "   Note: BufNewFile is also used by template expanders like mu-template
+  " - BufEnter: every time we change buffers
+  "   As some plugins use global option, we need to load local vimrcs on
+  "   BufEnter, even if they've been already loaded on BufEnter and BufNewFile.
+  "   TODO: Register that BufLeave hasn't been triggered => no need to reload
+  au BufEnter,BufRead,BufNewFile * :call s:SourceLocalVimrc(expand('<afile>:p:h'))
   " => Update script version every time it is saved.
   for s:_pat in s:local_vimrc
     exe 'au BufWritePre '.s:_pat. ' call lh#local_vimrc#_increment_version_on_save()'
