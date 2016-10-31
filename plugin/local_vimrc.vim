@@ -4,7 +4,7 @@
 "		<URL:http://github.com/LucHermitte/local_vimrc>
 " Version:	2.2.7
 " Created:	09th Apr 2003
-" Last Update:	28th Oct 2016
+" Last Update:	31st Oct 2016
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -121,6 +121,18 @@ set cpo&vim
 command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p:h'))
 
 " Default Options {{{1
+function! s:source(file)
+  exe 'source '.escape(a:file, ' \$')
+endfunction
+
+" s:getSNR([func_name])
+function! s:getSNR(...)
+  if !exists("s:SNR")
+    let s:SNR=matchstr(expand('<sfile>'), '<SNR>\d\+_\zegetSNR$')
+  endif
+  return s:SNR . (a:0>0 ? (a:1) : '')
+endfunction
+
 runtime plugin/let.vim " from lh-vim-lib
 LetIfUndef g:local_vimrc_options             {}
 LetIfUndef g:local_vimrc_options.whitelist   []
@@ -128,7 +140,8 @@ LetIfUndef g:local_vimrc_options.blacklist   []
 LetIfUndef g:local_vimrc_options.asklist     []
 LetIfUndef g:local_vimrc_options.sandboxlist []
 LetIfUndef g:local_vimrc_options._action_name = 'recognize a local vimrc at'
-LetIfUndef g:local_vimrc_options._do_handle  { file -> execute('source '.escape(file, ' \$'))}
+" LetIfUndef g:local_vimrc_options._do_handle  { file -> execute('source '.escape(file, ' \$'))}
+call lh#let#if_undef('g:local_vimrc_options._do_handle', function(s:getSNR('source')))
 let s:permission_lists = lh#path#new_permission_lists(g:local_vimrc_options)
 
 " Accept user defined ~/.vim/_vimrc_local.vim, but no file from the various addons,
