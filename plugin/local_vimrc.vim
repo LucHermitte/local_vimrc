@@ -2,9 +2,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.7
+" Version:	2.2.8
 " Created:	09th Apr 2003
-" Last Update:	31st Oct 2016
+" Last Update:	02nd Nov 2016
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,6 +52,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.8  BUG: Fix regression to support Vim7.3
 "       v2.2.7  ENH: Listen for BufRead and BufNewFile
 "       v2.2.6  ENH: Use lhvl 4.0.0 permission lists
 "       v2.2.5  BUG: Fix #7 -- support of config in directory
@@ -203,14 +204,14 @@ function! s:SourceLocalVimrc(path) abort
       let gpat = type(s:local_vimrc) == type([])
             \ ? ('{'.join(s:local_vimrc, ',').'}')
             \ : (s:local_vimrc)
-      " let new_conf = glob(gpat, 0, 1)
-      let new_conf = globpath(config, gpat, 0, 1)
+      " let new_conf = globpath(config, gpat, 0, 1) " This version ignored suffixes and wildignore
+      let new_conf = lh#path#glob_as_list(config, gpat) " This version doesn't
       let configs += new_conf
       call lh#local_vimrc#_verbose(" - dir config found %1 -> %2", config, new_conf)
     endif
   endfor
 
-  let configs = uniq(configs)
+  let configs = lh#list#uniq(configs)
   call s:permission_lists.handle_paths(configs)
 endfunction
 
