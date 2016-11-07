@@ -206,12 +206,12 @@ __after__ this plugin has been loaded. e.g.:
 ActivateAddons local_vimrc
 ...
 " Remove $HOME from the asklist,
-call filter(g:local_vimrc_options, 'v:val != $HOME')
+call lh#local_vimrc#filter_list('asklist', 'v:val != $HOME')
 " Add it in the sandbox list instead
-call lh#path#munge(g:local_vimrc_options.sandboxlist, $HOME)
+call lh#local_vimrc#munge('sandboxlist', $HOME)
 
 " Clean the whitelist
-let g:local_vimrc_options.whitelist = []
+let lh#local_vimrc#lists().whitelist = []
 ```
 
 ## Alternatives
@@ -273,6 +273,9 @@ name a few, there is for instance:
 
 ## History
 
+- v2.2.9  ENH: Simplify permission list management
+- v2.2.8  BUG: Fix regression to support Vim7.3
+- v2.2.7  ENH: Listen for BufRead and BufNewFile
 - v2.2.6  ENH: Use lhvl 4.0.0 permission lists  
           This implicitly fix asklist management
 - v2.2.5  BUG: Fix #7 -- support of config in directory

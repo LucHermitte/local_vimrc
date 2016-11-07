@@ -2,9 +2,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.8
+" Version:	2.2.9
 " Created:	09th Apr 2003
-" Last Update:	02nd Nov 2016
+" Last Update:	07th Nov 2016
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,6 +52,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.9  ENH: Simplify permission list management
 "       v2.2.8  BUG: Fix regression to support Vim7.3
 "       v2.2.7  ENH: Listen for BufRead and BufNewFile
 "       v2.2.6  ENH: Use lhvl 4.0.0 permission lists
@@ -109,8 +110,8 @@ if exists("g:loaded_local_vimrc")
       \ && !exists('g:force_reload_local_vimrc')
   finish
 endif
-if lh#path#version() < 3204
-  call lh#common#error_msg('local_vimrc requires a version of lh-vim-lib >= 3.2.4. Please upgrade it.')
+if lh#path#version() < 40000
+  call lh#common#error_msg('local_vimrc requires a version of lh-vim-lib >= 4.0.0. Please upgrade it.')
   finish
 endif
 let g:loaded_local_vimrc = s:k_version
@@ -122,43 +123,7 @@ set cpo&vim
 command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p:h'))
 
 " Default Options {{{1
-function! s:source(file)
-  exe 'source '.escape(a:file, ' \$')
-endfunction
-
-" s:getSNR([func_name])
-function! s:getSNR(...)
-  if !exists("s:SNR")
-    let s:SNR=matchstr(expand('<sfile>'), '<SNR>\d\+_\zegetSNR$')
-  endif
-  return s:SNR . (a:0>0 ? (a:1) : '')
-endfunction
-
-runtime plugin/let.vim " from lh-vim-lib
-LetIfUndef g:local_vimrc_options             {}
-LetIfUndef g:local_vimrc_options.whitelist   []
-LetIfUndef g:local_vimrc_options.blacklist   []
-LetIfUndef g:local_vimrc_options.asklist     []
-LetIfUndef g:local_vimrc_options.sandboxlist []
-LetIfUndef g:local_vimrc_options._action_name = 'recognize a local vimrc at'
-" LetIfUndef g:local_vimrc_options._do_handle  { file -> execute('source '.escape(file, ' \$'))}
-call lh#let#if_undef('g:local_vimrc_options._do_handle', function(s:getSNR('source')))
-let s:permission_lists = lh#path#new_permission_lists(g:local_vimrc_options)
-
-" Accept user defined ~/.vim/_vimrc_local.vim, but no file from the various addons,
-" bundles, ...
-call lh#path#munge(g:local_vimrc_options.whitelist, lh#path#vimfiles())
-call lh#path#munge(g:local_vimrc_options.blacklist, lh#path#vimfiles().'/.*')
-
-" Accept $HOME, but nothing from parent directories
-if         index(g:local_vimrc_options.whitelist,   $HOME) < 0
-      \ && index(g:local_vimrc_options.blacklist,   $HOME) < 0
-      \ && index(g:local_vimrc_options.sandboxlist, $HOME) < 0
-  call lh#path#munge(g:local_vimrc_options.asklist, $HOME)
-endif
-call lh#path#munge(g:local_vimrc_options.blacklist, fnamemodify('/', ':p'))
-" The directories where projects (we trust) are stored shall be added into
-" whitelist
+let s:permission_lists = lh#path#new_permission_lists(lh#local_vimrc#lists())
 
 " Functions {{{1
 " NB: Not all functions are moved into the autoload plugin.
