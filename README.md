@@ -193,10 +193,10 @@ ActivateAddons local_vimrc
 ...
 " Let's assume you put all projects you are working on in your
 " corporation under $HOME/dev/my_corporation/
-call lh#path#munge(g:local_vimrc_options.whitelist, $HOME.'/dev/my_corporation')
+call lh#local_vimrc#munge('whitelist', $HOME.'/dev/my_corporation')
 " But projects from 3rd parties/projects downloaded from the internet go
 " into $HOME/dev/3rdparties/
-call lh#path#munge(g:local_vimrc_options.blacklist, $HOME.'/dev/3rdparties')
+call lh#local_vimrc#munge('blacklist', $HOME.'/dev/3rdparties')
 ```
 
 If you want to override default settings, change them in your `.vimrc`
