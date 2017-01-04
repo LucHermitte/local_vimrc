@@ -4,7 +4,7 @@
 "		<URL:http://github.com/LucHermitte/local_vimrc>
 " Version:	2.2.9
 " Created:	09th Apr 2003
-" Last Update:	07th Nov 2016
+" Last Update:	04th Jan 2017
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -123,7 +123,12 @@ set cpo&vim
 command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p:h'))
 
 " Default Options {{{1
-let s:permission_lists = lh#path#new_permission_lists(lh#local_vimrc#lists())
+function! s:get_permission_lists()
+  if ! exists('s:permission_lists')
+    let s:permission_lists = lh#path#new_permission_lists(lh#local_vimrc#lists())
+  endif
+  return s:permission_lists
+endfunction
 
 " Functions {{{1
 " NB: Not all functions are moved into the autoload plugin.
@@ -134,11 +139,8 @@ let s:permission_lists = lh#path#new_permission_lists(lh#local_vimrc#lists())
 " Name of the files used                                              {{{2
 " NB: g:local_vimrc shall be set before loading this plugin!
 function! s:LocalVimrcName()
-  let res = exists('g:local_vimrc') ? g:local_vimrc : ['_vimrc_local.vim']
-  if type(res) == type('')
-    return [res]
-  endif
-  return res
+  let res = get(g:, 'local_vimrc', ['_vimrc_local.vim'])
+  return type(res) == type('') ? [res] : res
 endfunction
 
 let s:local_vimrc = s:LocalVimrcName()
@@ -155,29 +157,37 @@ function! s:IsAForbiddenPath(path)
   return forbidden
 endfunction
 
+function! s:verbose(...)
+  if exists('*lh#local_vimrc#_verbose')
+    call call('lh#local_vimrc#_verbose', a:000)
+  endif
+endfunction
+
 function! s:SourceLocalVimrc(path) abort
-  call lh#local_vimrc#_verbose("* Sourcing %1", a:path)
+  call s:verbose("* Sourcing %1", a:path)
   if s:IsAForbiddenPath(a:path) | return | endif
 
   let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
   let configs = []
   for config in config_found
     if filereadable(config)
-      call lh#local_vimrc#_verbose(" - File config found -> %1", config)
+      call s:verbose(" - File config found -> %1", config)
       let configs += [config]
     elseif isdirectory(config)
       let gpat = type(s:local_vimrc) == type([])
             \ ? ('{'.join(s:local_vimrc, ',').'}')
             \ : (s:local_vimrc)
-      " let new_conf = globpath(config, gpat, 0, 1) " This version ignored suffixes and wildignore
+      " let new_conf = globpath(config, gpat, 0, 1) " This version ignores suffixes and wildignore
       let new_conf = lh#path#glob_as_list(config, gpat) " This version doesn't
       let configs += new_conf
-      call lh#local_vimrc#_verbose(" - dir config found %1 -> %2", config, new_conf)
+      call s:verbose(" - dir config found %1 -> %2", config, new_conf)
     endif
   endfor
 
-  let configs = lh#list#uniq(configs)
-  call s:permission_lists.handle_paths(configs)
+  if !empty(configs)
+    let configs = lh#list#uniq(configs)
+    call s:get_permission_lists().handle_paths(configs)
+  endif
 endfunction
 
 " Auto-command                                                        {{{2
