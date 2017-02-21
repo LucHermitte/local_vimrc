@@ -2,9 +2,9 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.9
+" Version:	2.2.10
 " Created:	09th Apr 2003
-" Last Update:	04th Jan 2017
+" Last Update:	21st Feb 2017
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -52,6 +52,7 @@
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.10 ENH: Add 'edit local vimrc' in menu
 "       v2.2.9  ENH: Simplify permission list management
 "       v2.2.8  BUG: Fix regression to support Vim7.3
 "       v2.2.7  ENH: Listen for BufRead and BufNewFile
@@ -136,7 +137,7 @@ endfunction
 " autoload plugin would have been loaded each time. This, way, we try to delay
 " its sourcing to the last moment.
 
-" Name of the files used                                              {{{2
+" # Name of the files used                                            {{{2
 " NB: g:local_vimrc shall be set before loading this plugin!
 function! s:LocalVimrcName()
   let res = get(g:, 'local_vimrc', ['_vimrc_local.vim'])
@@ -145,13 +146,13 @@ endfunction
 
 let s:local_vimrc = s:LocalVimrcName()
 
-" Value of $HOME -- actually a regex.                                 {{{2
+" # Value of $HOME -- actually a regex.                               {{{2
 let s:home = substitute($HOME, '[/\\]', '[/\\\\]', 'g')
 
-" Regex used to determine when we must stop looking for local-vimrc's {{{2
+" # Regex used to know when we must stop looking for local-vimrc's    {{{2
 let s:re_last_path = !empty(s:home) ? ('^'.s:home.'$') : ''
 
-" The main function                                                   {{{2
+" # The main function                                                 {{{2
 function! s:IsAForbiddenPath(path)
   let forbidden = a:path =~ '^\(s\=ftp:\|s\=http:\|scp:\|^$\)'
   return forbidden
@@ -187,10 +188,16 @@ function! s:SourceLocalVimrc(path) abort
   if !empty(configs)
     let configs = lh#list#uniq(configs)
     call s:get_permission_lists().handle_paths(configs)
+    call lh#let#if_undef('p:local_vimrc.configs', configs)
   endif
 endfunction
 
-" Auto-command                                                        {{{2
+" # Menus                                                             {{{2
+if has('gui_running') && has ('menu')
+  call lh#project#menu#make('nic', '76', 'Edit local &vimrc', '<localleader>le', '<buffer>', ':call lh#local_vimrc#_open_local_vimrc()<cr>' )
+endif
+
+" # Auto-command                                                      {{{2
 aug LocalVimrc
   au!
   " => automate the loading of local-vimrc's:
