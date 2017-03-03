@@ -5,7 +5,7 @@
 " Version:      2.2.10.
 let s:k_version = 2210
 " Created:      04th Mar 2015
-" Last Update:  21st Feb 2017
+" Last Update:  03rd Mar 2017
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:
@@ -54,6 +54,7 @@ endfunction
 
 " s:source(file)  {{{3
 function! s:source(file) abort
+  call lh#local_vimrc#_verbose("Sourcing " . a:file)
   exe 'source '.escape(a:file, ' \$')
 endfunction
 
