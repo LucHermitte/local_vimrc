@@ -5,7 +5,7 @@
 " Version:      2.2.10.
 let s:k_version = 2210
 " Created:      04th Mar 2015
-" Last Update:  03rd Mar 2017
+" Last Update:  15th Mar 2017
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:
@@ -130,7 +130,7 @@ function! lh#local_vimrc#_handle_file(file, permission) abort
     exe 'sandbox source '.escape(a:file, ' \$,')
     return
   elseif a:permission == 'ask'
-    if CONFIRM('Do you want to source "'.a:file.'"?', "&Yes\n&No", 1) != 1
+    if lh#ui#confirm('Do you want to source "'.a:file.'"?', "&Yes\n&No", 1) != 1
       return
     endif
   endif
