@@ -3,8 +3,9 @@
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
 " Version:	2.2.10
+let s:k_version = 2210
 " Created:	09th Apr 2003
-" Last Update:	21st Feb 2017
+" Last Update:	15th Mar 2017
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -53,6 +54,7 @@
 "
 " History:	{{{2
 "       v2.2.10 ENH: Add 'edit local vimrc' in menu
+"               ENH: Ignore buffer when `! lh#project#is_eligible()`
 "       v2.2.9  ENH: Simplify permission list management
 "       v2.2.8  BUG: Fix regression to support Vim7.3
 "       v2.2.7  ENH: Listen for BufRead and BufNewFile
@@ -105,7 +107,6 @@
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-let s:k_version = 223
 if exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
       \ && !exists('g:force_reload_local_vimrc')
@@ -154,8 +155,12 @@ let s:re_last_path = !empty(s:home) ? ('^'.s:home.'$') : ''
 
 " # The main function                                                 {{{2
 function! s:IsAForbiddenPath(path)
-  let forbidden = a:path =~ '^\(s\=ftp:\|s\=http:\|scp:\|^$\)'
-  return forbidden
+  " Ignore qf buffers, distant buffers, and scratch buffers
+  let is_forbidden = ! lh#project#is_eligible(a:path)
+  if is_forbidden
+    call s:verbose('  -> Ø <- Ignore `%1`: buffer is either of qf filetype, or distant, or scratch', a:path)
+  endif
+  return is_forbidden
 endfunction
 
 function! s:verbose(...)
@@ -165,7 +170,7 @@ function! s:verbose(...)
 endfunction
 
 function! s:SourceLocalVimrc(path) abort
-  call s:verbose("* Sourcing %1", a:path)
+  call s:verbose("* Sourcing `%1` for `%2` (nr: %3, ft: `%4`)", a:path, expand('%'), bufnr('%'), lh#option#getbufvar(bufnr('%'), '&ft'))
   if s:IsAForbiddenPath(a:path) | return | endif
 
   let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
