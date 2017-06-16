@@ -1,0 +1,7 @@
+Luc Hermitte, maintainer, 2003-2017
+Cristian Klein, patch to support spaces in pathname
+Riley Strong, Fix dependency error in the install procedure, 2014, PR#2
+Daniel Hahler, Add reference in the readme, 2014, PR#3
+Gregory Igelmund, Fix install procedure (bundle), 2015, PR#4
+István Szénási, Fix `:SourceLocalVimrc`, 2015, PR#5
+Jim Nasby, Rename VAM addon file, 2015, PR#6
