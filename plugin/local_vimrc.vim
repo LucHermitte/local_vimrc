@@ -2,10 +2,10 @@
 " File:		plugin/local_vimrc.vim                                     {{{1
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://github.com/LucHermitte/local_vimrc>
-" Version:	2.2.10
-let s:k_version = 2210
+" Version:	2.2.11
+let s:k_version = 2211
 " Created:	09th Apr 2003
-" Last Update:	15th Mar 2017
+" Last Update:	16th Jun 2017
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -53,6 +53,7 @@ let s:k_version = 2210
 "	   :SourceLocalVimrc before doing the actual expansion.
 "
 " History:	{{{2
+"       v2.2.11 BUG: Use `is_eligible` on the right pathname (PR#12)
 "       v2.2.10 ENH: Add 'edit local vimrc' in menu
 "               ENH: Ignore buffer when `! lh#project#is_eligible()`
 "       v2.2.9  ENH: Simplify permission list management
@@ -122,7 +123,7 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands {{{1
-command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p:h'))
+command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p'))
 
 " Default Options {{{1
 function! s:get_permission_lists()
@@ -215,7 +216,7 @@ aug LocalVimrc
   "   As some plugins use global option, we need to load local vimrcs on
   "   BufEnter, even if they've been already loaded on BufEnter and BufNewFile.
   "   TODO: Register that BufLeave hasn't been triggered => no need to reload
-  au BufEnter,BufRead,BufNewFile * :call s:SourceLocalVimrc(expand('<afile>:p:h'))
+  au BufEnter,BufRead,BufNewFile * :call s:SourceLocalVimrc(expand('<afile>:p'))
   " => Update script version every time it is saved.
   for s:_pat in s:local_vimrc
     exe 'au BufWritePre '.s:_pat. ' call lh#local_vimrc#_increment_version_on_save()'
