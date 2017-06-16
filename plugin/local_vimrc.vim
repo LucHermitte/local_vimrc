@@ -54,6 +54,7 @@ let s:k_version = 2211
 "
 " History:	{{{2
 "       v2.2.11 BUG: Use `is_eligible` on the right pathname (PR#12)
+"               ENH: Don't source anything on directories
 "       v2.2.10 ENH: Add 'edit local vimrc' in menu
 "               ENH: Ignore buffer when `! lh#project#is_eligible()`
 "       v2.2.9  ENH: Simplify permission list management
@@ -171,6 +172,14 @@ function! s:verbose(...)
 endfunction
 
 function! s:SourceLocalVimrc(path) abort
+  " If a:path is a directory, it's bufnr may be completly messed up with the
+  " one from another buffer
+  " Question shall we have local vimrc applied on directories edited through
+  " `:sp %:h`? Let's say no.
+  if isdirectory(a:path)
+    call s:verbose("  -> Ø <- Ignore `%1`: this is a directory", a:path)
+    return
+  endif
   call s:verbose("* Sourcing `%1` for `%2` (nr: %3, ft: `%4`)", a:path, expand('%'), bufnr('%'), lh#option#getbufvar(bufnr('%'), '&ft'))
   if s:IsAForbiddenPath(a:path) | return | endif
 
