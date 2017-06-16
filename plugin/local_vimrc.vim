@@ -56,6 +56,7 @@ let s:k_version = 2211
 "       v2.2.11 BUG: Use `is_eligible` on the right pathname (PR#12)
 "               ENH: Don't source anything on directories
 "               ENH: Don't source multiple times in a row with a same buffer
+"               ENH: Improve logs
 "       v2.2.10 ENH: Add 'edit local vimrc' in menu
 "               ENH: Ignore buffer when `! lh#project#is_eligible()`
 "       v2.2.9  ENH: Simplify permission list management
@@ -125,7 +126,7 @@ set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands {{{1
-command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p'))
+command! -nargs=0 SourceLocalVimrc call s:SourceLocalVimrc(expand('%:p'), 'Explicit')
 
 " Default Options {{{1
 function! s:get_permission_lists()
@@ -173,8 +174,8 @@ function! s:verbose(...)
 endfunction
 
 let s:last_buffer = -1
-function! s:SourceLocalVimrc(path) abort
-  call s:verbose("* Sourcing `%1` for `%2` (nr: %3, ft: `%4`)", a:path, expand('%'), bufnr('%'), lh#option#getbufvar(bufnr('%'), '&ft'))
+function! s:SourceLocalVimrc(path, origin) abort
+  call s:verbose("* Searching local_vimrc for `%1` w/ %=`%2` (nr: %3, ft: `%4`) on %5", a:path, expand('%'), bufnr('%'), lh#option#getbufvar(bufnr('%'), '&ft'), a:origin)
   " If a:path is a directory, it's bufnr may be completly messed up with the
   " one from another buffer
   " Question shall we have local vimrc applied on directories edited through
@@ -236,7 +237,9 @@ aug LocalVimrc
   "   As some plugins use global option, we need to load local vimrcs on
   "   BufEnter, even if they've been already loaded on BufEnter and BufNewFile.
   "   TODO: Register that BufLeave hasn't been triggered => no need to reload
-  au BufEnter,BufRead,BufNewFile * :call s:SourceLocalVimrc(expand('<afile>:p'))
+  au BufEnter   * :call s:SourceLocalVimrc(expand('<afile>:p'), 'BufEnter')
+  au BufRead    * :call s:SourceLocalVimrc(expand('<afile>:p'), 'BufRead')
+  au BufNewFile * :call s:SourceLocalVimrc(expand('<afile>:p'), 'BufNewFile')
   " => Update script version every time it is saved.
   for s:_pat in s:local_vimrc
     exe 'au BufWritePre '.s:_pat. ' call lh#local_vimrc#_increment_version_on_save()'
