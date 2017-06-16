@@ -154,9 +154,9 @@ let s:home = substitute($HOME, '[/\\]', '[/\\\\]', 'g')
 let s:re_last_path = !empty(s:home) ? ('^'.s:home.'$') : ''
 
 " # The main function                                                 {{{2
-function! s:IsAForbiddenPath(path)
+function! s:IsAForbiddenPath(path, bufid)
   " Ignore qf buffers, distant buffers, and scratch buffers
-  let is_forbidden = ! lh#project#is_eligible(a:path)
+  let is_forbidden = ! lh#project#is_eligible(a:bufid)
   if is_forbidden
     call s:verbose('  -> Ø <- Ignore `%1`: buffer is either of qf filetype, or distant, or scratch', a:path)
   endif
@@ -171,7 +171,7 @@ endfunction
 
 function! s:SourceLocalVimrc(path) abort
   call s:verbose("* Sourcing `%1` for `%2` (nr: %3, ft: `%4`)", a:path, expand('%'), bufnr('%'), lh#option#getbufvar(bufnr('%'), '&ft'))
-  if s:IsAForbiddenPath(a:path) | return | endif
+  if s:IsAForbiddenPath(a:path, bufnr('%')) | return | endif
 
   let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
   let configs = []
