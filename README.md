@@ -83,19 +83,19 @@ However some plugins, like
 [_alternate_ (a.vim)](http://www.vim.org/scripts/script.php?script_id=31), rely
 on global variables to tune their behaviour. The settings (global variables)
 related to those plugins will require you to update their value every time --
-if you expect to have settings that differ from a project to the other. In
+if you expect to have settings that differ from a project to another. In
 order to support such project-aware setting, `local_vimrc` lets you in charge
 of handling anti-reinclusion guards in project configuration files.
 
 For your project settings prefer buffer-local mappings (`:h :map-<buffer>`),
 abbreviations(`:h :abbreviate-<buffer>`), commands (`:h :command-buffer`),
-menus (see my fork of buffer-menu), settings (`:h :setlocal`), and variables
-(`:h local-variable`).
+menus (see my fork of
+[buffer-menu](https://github.com/LucHermitte/lh-misc/blob/master/plugin/buffermenu.vim)),
+settings (`:h :setlocal`), and variables (`:h local-variable`).
 
 N.B.: if you are a plugin writer that want to support configuration variables
 that'll dynamically adapt to the current project settings, have a look at my
-[`lh#option#get()`](http://github.com/LucHermitte/lh-vim-lib) and
-[`lh#dev#option#get()`](http://github.com/LucHermitte/lh-dev)
+[`lh#option#get()` and `lh#ft#option#get()`](http://github.com/LucHermitte/lh-vim-lib)
 functions.
 
 You'll find examples of use in my
@@ -107,7 +107,7 @@ The behaviour of this plugin can be tuned with the following options:
 
 - `g:local_vimrc` variable specifies the filenames and filepaths to be searched. The default
   is `"_vimrc_local.vim"`. It can contain a list (`:h List`) of pathnames, or a simple string.
-  It's meants to contain something that'll be relative to your current project
+  It's meant to contain something that'll be relative to your current project
   root.  
   This can contain a directory or list of directories. In that case, in order
   to find any file named `_vimrc_local.vim` in directories named `.config/` at
@@ -174,7 +174,7 @@ Depending on the kind of the pattern that is the best match for the current
 
 - Any `_vimrc_local` file in `$HOME/.vim/` will be sourced.
 - However, files in `$HOME/.vim/` subdirectories will be ignored. This way, the
-  end-user may specify options he use when editing vim files. See
+  end-user may specify options to use when editing vim files. See
   [the file I use](http://github.com/LucHermitte/lh-misc/blob/master/_vimrc_local.vim)
   for instance.
 - `_vimrc_local` files under `$HOME` are sourced only if the end-user
@@ -184,7 +184,7 @@ Depending on the kind of the pattern that is the best match for the current
 #### Tuning the lists
 
 In order to blindly accept `_vimrc_local` files from projects your are working
-on, you'll have to add this kind lines into your `.vimrc`, __after__ this
+on, you'll have to add this kind of lines into your `.vimrc`, __after__ this
 plugin has been loaded:
 
 ```vim
@@ -221,7 +221,7 @@ To be fair, there exist [alternatives](http://stackoverflow.com/a/456889/15934).
 ### Modelines
 Modelines are particularly limited:
 * We can't set variables (that tunes other (ft)plugins, like _"should the braces of the for-snippet be on a newline ?"_),
-* nor call function from them (I don't limit myself to coding standards, I also set the makefile to use depending on the current directory)
+* nor call functions from modelines (I don't limit myself to coding standards, I also set the makefile to use depending on the current directory)
 * Modelines aren't [DRY](http://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 With modelines, a setting needs to be repeated in every file, if there are too many things to set or tunings to change, it will quickly become difficult to maintain, moreover, it will require the use of a [template-expander plugin](http://vim.wikia.com/wiki/Category:Automated_Text_Insertion) (which you should consider if you have several vimmers in your project).
 * Not every one uses Vim to develop. I don't want to be bothered by other people editor settings, why should I parasite theirs with modelines ?
@@ -251,14 +251,17 @@ name a few, there is for instance:
 
     - Aric Blumer's good old [project.vim plugin #69](http://www.vim.org/scripts/script.php?script_id=69) which addresses other _project_ concerns.
     - Tim Pope's [Projectionist #4989](https://github.com/tpope/vim-projectionist),
+    - [Vim plugin](https://github.com/editorconfig/editorconfig-vim) for [EditorConfig](http://editorconfig.org/) -- I plan eventually to provide a
+      way to [set project variables for this plugin](https://github.com/LucHermitte/lh-vim-lib/issues/8),
+    - My [lh-vim-lib](https://github.com/LucHermitte/lh-vim-lib/blob/master/doc/Project.md) library plugin provides a new way to define _projects_
+      and to tune plugins on a per project basis. For more complex plugins, both approaches can be mixed.
 
 - local-vimrc plugins:
 
-    - Marc Weber's
-      [vim-addon-local-vimrc](https://github.com/MarcWeber/vim-addon-local-vimrc)
+    - Marc Weber's [vim-addon-local-vimrc](https://github.com/MarcWeber/vim-addon-local-vimrc)
     - Markus _"embear"_ Braun's [local_vimrc #441](https://github.com/embear/vim-localvimrc),
     - thinca's [localrc.vim #3393](http://www.vim.org/scripts/script.php?script_id=3393),
-    - Tye Zdrojewski's [Directory specific settings #1860](http://www.vim.org/scripts/script.php?script_id=1860),
+    - Tye Zdrojewski's [Directory specific settings #1860](http://www.vim.org/scripts/script.php?script_id=1860).
 
 ## TO DO
 
