@@ -1,8 +1,8 @@
 {
     "name": "local_vimrc",
     "version": "dev",
-    "author" : "Luc Hermitte <http://code.google.com/p/lh-vim/wiki/contact>",
-    "maintainer" : "Luc Hermitte <http://code.google.com/p/lh-vim/wiki/contact>",
+    "author" : "Luc Hermitte <http://github.com/LucHermitte>",
+    "maintainer" : "Luc Hermitte <http://github.com/LucHermitte>",
     "repository" : {"type": "git", "url": "git@github.com:LucHermitte/local_vimrc.git"},
     "dependencies" : {
         "lh-vim-lib" : {"type" : "git", "url" : "git@github.com:LucHermitte/lh-vim-lib.git"}
