@@ -7,7 +7,7 @@ A project is defined by a root directory: everything under the root directory
 belongs to the project. No need to register every single file in the project,
 they all belong.
 
-[![Project Stats](https://www.openhub.net/p/21020/widgets/project_thin_badge.gif)](https://www.openhub.net/p/21020)
+[![Last release](https://img.shields.io/github/tag/LucHermitte/local_vimrc.svg)](https://github.com/LucHermitte/local_vimrc/releases) [![Project Stats](https://www.openhub.net/p/21020/widgets/project_thin_badge.gif)](https://www.openhub.net/p/21020)
 
 ## Purpose
 
@@ -43,6 +43,13 @@ in vim-addon-file format.
 ```vim
 ActivateAddons local_vimrc
 ```
+
+Or with [vim-flavor](http://github.com/kana/vim-flavor) which also supports dependencies:
+
+```
+flavor 'LucHermitte/local_vimrc'
+```
+
 
 With Vundle
 
