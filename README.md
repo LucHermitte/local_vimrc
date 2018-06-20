@@ -286,6 +286,17 @@ name a few, there is for instance:
 
 ## History
 
+- v2.2.11  
+         - BUG: Use `is_eligible` on the right pathname (PR#12) 
+         - ENH: Don't source anything on directories 
+         - ENH: Don't source multiple times in a row with a same buffer
+         - ENH: Improve logs 
+         - DOC: Miscelleanous improvments
+- v2.2.10
+         - ENH: Add 'edit local vimrc' in menu
+         - ENH: Ignore buffer when `! lh#project#is_eligible()`
+         - ENH: Abort of quickfix and fugitive paths
+         - PERF: Improve vim startup time 
 - v2.2.9  ENH: Simplify permission list management
 - v2.2.8  BUG: Fix regression to support Vim7.3
 - v2.2.7  ENH: Listen for BufRead and BufNewFile
