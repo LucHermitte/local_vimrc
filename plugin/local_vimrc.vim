@@ -5,7 +5,7 @@
 " Version:	2.2.11
 let s:k_version = 2211
 " Created:	09th Apr 2003
-" Last Update:	16th Jun 2017
+" Last Update:	16th Jan 2019
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -111,9 +111,12 @@ let s:k_version = 2211
 
 "=============================================================================
 " Avoid global reinclusion {{{1
-if exists("g:loaded_local_vimrc")
+let s:cpo_save=&cpo
+set cpo&vim
+if &cp || (exists("g:loaded_local_vimrc")
       \ && (g:loaded_local_vimrc >= s:k_version)
-      \ && !exists('g:force_reload_local_vimrc')
+      \ && !exists('g:force_reload_local_vimrc'))
+  let &cpo=s:cpo_save
   finish
 endif
 if lh#path#version() < 40000
@@ -121,8 +124,6 @@ if lh#path#version() < 40000
   finish
 endif
 let g:loaded_local_vimrc = s:k_version
-let s:cpo_save=&cpo
-set cpo&vim
 " Avoid global reinclusion }}}1
 "------------------------------------------------------------------------
 " Commands {{{1
@@ -158,7 +159,7 @@ let s:home = substitute($HOME, '[/\\]', '[/\\\\]', 'g')
 let s:re_last_path = !empty(s:home) ? ('^'.s:home.'$') : ''
 
 " # The main function                                                 {{{2
-function! s:IsAForbiddenPath(path)
+function! s:IsAForbiddenPath(path) abort
   " Ignore qf buffers, distant buffers, and scratch buffers
   let is_forbidden = ! lh#project#is_eligible(a:path)
   if is_forbidden
