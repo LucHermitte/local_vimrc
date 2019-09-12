@@ -6,3 +6,4 @@ Gregory Igelmund, Fix install procedure (bundle), 2015, PR#4
 István Szénási, Fix `:SourceLocalVimrc`, 2015, PR#5
 Jim Nasby, Rename VAM addon file, 2015, PR#6
 Dan Aloni, Fix issue with files opened with NERDTree, 2017, PR#12
+Alexey Aksenov, Fix issue with 1st loaded file in Neovim, 2019, PR#15
