@@ -193,8 +193,8 @@ function! s:SourceLocalVimrc(path, origin) abort
     call s:verbose("  -> Ø <- Ignore `%1`: current buffer (%2) hasn't changed since last time (%3)", a:path, bid, s:last_buffer)
     return
   endif
-  let s:last_buffer = bid
   if s:IsAForbiddenPath(a:path) | return | endif
+  let s:last_buffer = bid
 
   let config_found = lh#path#find_in_parents(a:path, s:local_vimrc, 'file,dir', s:re_last_path)
   let configs = []
