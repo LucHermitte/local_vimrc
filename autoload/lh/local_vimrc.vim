@@ -5,7 +5,7 @@
 " Version:      2.2.11.
 let s:k_version = 2211
 " Created:      04th Mar 2015
-" Last Update:  20th Jun 2018
+" Last Update:  15th Nov 2019
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:
@@ -68,6 +68,7 @@ endfunction
 
 " Function: lh#local_vimrc#munge(listname, path) {{{3
 function! lh#local_vimrc#munge(listname, path) abort
+  call lh#local_vimrc#_verbose("munge(g:local_vimrc_options.%1, %2)", a:listname, a:path)
   return lh#path#munge(g:local_vimrc_options[a:listname], a:path)
 endfunction
 
