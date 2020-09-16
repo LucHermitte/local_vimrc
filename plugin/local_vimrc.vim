@@ -5,7 +5,7 @@
 " Version:	2.2.11
 let s:k_version = 2211
 " Created:	09th Apr 2003
-" Last Update:	16th Jan 2019
+" Last Update:	16th Sep 2020
 " License:      GPLv3
 "------------------------------------------------------------------------
 " Description:	Solution to Yakov Lerner's question on Vim ML {{{2
@@ -57,6 +57,8 @@ let s:k_version = 2211
 "               ENH: Don't source anything on directories
 "               ENH: Don't source multiple times in a row with a same buffer
 "               ENH: Improve logs
+"               BUG: Define "Edit Local Vimrc" mapping in buffers with a
+"                    local vimrc.
 "       v2.2.10 ENH: Add 'edit local vimrc' in menu
 "               ENH: Ignore buffer when `! lh#project#is_eligible()`
 "       v2.2.9  ENH: Simplify permission list management
@@ -215,15 +217,14 @@ function! s:SourceLocalVimrc(path, origin) abort
 
   if !empty(configs)
     let configs = lh#list#uniq(configs)
-    call s:get_permission_lists().handle_paths(configs)
+    let some_found = s:get_permission_lists().handle_paths(configs)
+    call s:verbose("%1 local vimrc found and sourced", some_found)
     call lh#let#if_undef('p:local_vimrc.configs', configs)
+    if some_found && has('gui_running') && has ('menu') && a:origin =~ 'BufRead\|BufNewFile'
+      call lh#project#menu#make('nic', '76', 'Edit local &vimrc', '<localleader>le', '<buffer>', ':call lh#local_vimrc#_open_local_vimrc()<cr>' )
+    endif
   endif
 endfunction
-
-" # Menus                                                             {{{2
-if has('gui_running') && has ('menu')
-  call lh#project#menu#make('nic', '76', 'Edit local &vimrc', '<localleader>le', '<buffer>', ':call lh#local_vimrc#_open_local_vimrc()<cr>' )
-endif
 
 " # Auto-command                                                      {{{2
 aug LocalVimrc

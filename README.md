@@ -29,7 +29,7 @@ sources the one found.
 ## Requirements / Installation
 
 The latest version of this script requires vim 7.0 and
-[lh-vim-lib](http://github.com/LucHermitte/lh-vim-lib) v4.0.0+.
+[lh-vim-lib](http://github.com/LucHermitte/lh-vim-lib) v5.2.1+.
 [UT](http://github.com/LucHermitte/vim-UT) v0.1.0 will be required to
 execute the unit tests.
 
@@ -292,11 +292,12 @@ name a few, there is for instance:
     - ENH: Don't source multiple times in a row with a same buffer
     - ENH: Improve logs 
     - DOC: Miscelleanous improvments
+    - BUG: Define "Edit Local Vimrc" mapping in buffers with a local vimrc.
 - v2.2.10
     - ENH: Add 'edit local vimrc' in menu
     - ENH: Ignore buffer when `! lh#project#is_eligible()`
     - ENH: Abort of quickfix and fugitive paths
-    - PERF: Improve vim startup time 
+    - PERF: Improve vim startup time
 - v2.2.9  ENH: Simplify permission list management
 - v2.2.8  BUG: Fix regression to support Vim7.3
 - v2.2.7  ENH: Listen for BufRead and BufNewFile
