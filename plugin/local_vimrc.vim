@@ -220,7 +220,7 @@ function! s:SourceLocalVimrc(path, origin) abort
     let some_found = s:get_permission_lists().handle_paths(configs)
     call s:verbose("%1 local vimrc found and sourced", some_found)
     call lh#let#if_undef('p:local_vimrc.configs', configs)
-    if some_found && has('gui_running') && has ('menu') && a:origin =~ 'BufRead\|BufNewFile'
+    if !empty(some_found) && has('gui_running') && has ('menu') && a:origin =~ 'BufRead\|BufNewFile'
       call lh#project#menu#make('nic', '76', 'Edit local &vimrc', '<localleader>le', '<buffer>', ':call lh#local_vimrc#_open_local_vimrc()<cr>' )
     endif
   endif
